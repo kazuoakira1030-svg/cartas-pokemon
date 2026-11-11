@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pokémon TCG • Simulador de Abertura de Booster</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=Plus+Jakarta+Sans:wght@500;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+  <!-- FUNDO TEMÁTICO DE ESTÁDIO POKÉMON COM DETALHES CHAMATIVOS -->
+  <div class="poke-bg-stadium"></div>
+  <div class="bg-grid-pattern"></div>
+  <div class="giant-bg-pokeball"></div>
+  <canvas id="fxCanvas"></canvas>
+
+  <!-- FLASH DE LUZ DE TELA CHEIA (PARA ABERTURA DO PACOTE E CLÍMAX) -->
+  <div class="screen-flash" id="screenFlash"></div>
+
+  <!-- TOPO INSPIRADO EM POKÉMON TCG (DISCRETO, SEM SPOILERS) -->
+  <header class="poke-header">
+    <div class="poke-brand">
+      <div class="pokeball-icon"></div>
+      <div class="poke-logo-text">
+        <span class="poke-title">Pokémon TCG</span>
+        <span class="poke-subtitle">Scarlet &amp; Violet • Simulador Oficial de Booster</span>
+      </div>
+    </div>
+
+    <div class="header-actions">
+      <div class="pack-badge-pill">
+        <span>⚡ Booster Pack • 11 Cartas Estampas Ilustradas</span>
+      </div>
+      <button class="btn-poke-round" id="btnSoundToggle" title="Ativar / Desativar Efeitos Sonoros">
+        🔊
+      </button>
+    </div>
+  </header>
+
+  <!-- PALCO CENTRAL — SOMENTE UM PACOTE GRANDE NO CENTRO DA TELA -->
+  <main class="center-stage">
+
+    <!-- CENA 1: O GRANDE PACOTE BOOSTER NO CENTRO COM ANIMAÇÃO DE CORTE E EMERGÊNCIA DAS CARTAS -->
+    <section class="pack-scene" id="packScene">
+      <div class="pack-aura-ring" id="packAuraRing"></div>
+
+      <!-- Feixes de luz que saem de dentro do pacote quando ele é rasgado -->
+      <div class="pack-inner-light-beams" id="packInnerBeams"></div>
+
+      <div class="giant-booster-pack" id="giantBoosterPack" title="Clique para rasgar e abrir o pacote!">
+        <!-- Pilha de cartas interna que sobe de dentro do pacote real ao abrir -->
+        <div class="pack-emerging-cards" id="packEmergingCards">
+          <div class="emerging-card-layer layer-3"></div>
+          <div class="emerging-card-layer layer-2"></div>
+          <div class="emerging-card-layer layer-1"></div>
+        </div>
+
+        <!-- Parte superior da imagem do pacote real (que é cortada e voa ao rasgar!) -->
+        <div class="pack-real-slice pack-top-slice" id="packCrimpTop">
+          <img class="real-booster-img"
+               src="https://archives.bulbagarden.net/media/upload/2/24/151_Booster.png"
+               referrerpolicy="no-referrer"
+               alt="Topo do Booster Pack Pokémon 151"
+               onerror="if(!this.dataset.fallback){this.dataset.fallback='1';this.src='https://tcgplayer-cdn.tcgplayer.com/product/504467_in_1000x1000.jpg';}" />
+          <div class="pack-holo-glare"></div>
+        </div>
+
+        <!-- Linha de corte laser / energia ao rasgar -->
+        <div class="pack-slash-effect" id="packSlashEffect"></div>
+        <div class="pack-tear-line" id="packTearLine">
+          <span class="crimp-cut-hint">✂️ CLIQUE PARA RASGAR</span>
+        </div>
+
+        <!-- Corpo principal da imagem do pacote real (86% inferiores) -->
+        <div class="pack-wrapper-shell" id="packWrapperShell">
+          <div class="pack-real-slice pack-bottom-slice">
+            <img class="real-booster-img"
+                 src="https://archives.bulbagarden.net/media/upload/2/24/151_Booster.png"
+                 referrerpolicy="no-referrer"
+                 alt="Booster Pack Oficial Pokémon Scarlet & Violet 151"
+                 onerror="if(!this.dataset.fallback){this.dataset.fallback='1';this.src='https://tcgplayer-cdn.tcgplayer.com/product/504467_in_1000x1000.jpg';}" />
+            <div class="pack-holo-sheen"></div>
+            <div class="pack-holo-glare"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="pack-cta-area" id="packCtaArea">
+        <button class="btn-poke-primary" id="btnOpenPack">
+          <span>✨ Abrir Pacote Booster</span>
+        </button>
+        <p class="pack-hint-text">
+          Clique no pacote para cortar o lacre e revelar as 11 cartas!
+        </p>
+      </div>
+    </section>
+
+    <!-- CENA 2: REVELAÇÃO DAS 11 CARTAS (DISCRETA ANTES DE VIRAR CADA CARTA) -->
+    <section class="reveal-stage" id="revealStage">
+
+      <!-- Barra de progresso das 11 cartas -->
+      <div class="card-progress-bar">
+        <div class="progress-header">
+          <span class="progress-counter-badge" id="progressCounterBadge">CARTA 1 DE 11</span>
+          <span class="rarity-tier-banner tier-normal" id="rarityTierBanner">Booster Scarlet &amp; Violet 151</span>
+        </div>
+        <div class="progress-pips" id="progressPips"></div>
+      </div>
+
+      <!-- Arena Central da Carta 3D com Pilha de Cartas e Efeitos Especiais -->
+      <div class="card-arena">
+        <div class="arena-god-rays" id="arenaGodRays"></div>
+        <div class="love-magic-circle" id="loveMagicCircle"></div>
+        <div class="shockwave-ring" id="shockwaveRing"></div>
+
+        <!-- Sombra das cartas restantes no baralho atrás da carta atual -->
+        <div class="deck-stack-shadow stack-card-2" id="stackShadow2"></div>
+        <div class="deck-stack-shadow stack-card-1" id="stackShadow1"></div>
+
+        <div class="card-3d-wrapper" id="card3dWrapper">
+          <div class="card-3d-inner" id="card3dInner">
+
+            <!-- VERSO ORIGINAL OFICIAL DA CARTA POKÉMON TCG -->
+            <div class="card-face card-back">
+              <!-- Imagem oficial de alta definição + SVG fiel de fallback -->
+              <img class="official-cardback-img"
+                   src="https://tcg.pokemon.com/assets/img/global/tcg-card-back-2x.jpg"
+                   alt="Pokémon TCG Card Back"
+                   onerror="this.style.display='none';" />
+
+              <!-- Recreacão fiel do Verso Original Pokémon TCG (visível enquanto carrega ou offline) -->
+              <div class="orig-back-fallback">
+                <div class="orig-back-inner-border">
+                  <div class="orig-back-vortex"></div>
+                  <div class="orig-back-logo top-logo">POKÉMON</div>
+                  <div class="orig-back-pokeball">
+                    <div class="orig-pokeball-center"></div>
+                  </div>
+                  <div class="orig-back-logo bottom-logo">POKÉMON</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Frente da Carta (Renderizada dinamicamente: Real 1..10 ou Umbreon & Sylveon 11) -->
+            <div class="card-face card-front" id="cardFrontContent"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Legenda da Carta Atual -->
+      <div class="card-caption-panel">
+        <div class="card-caption-name" id="cardCaptionName">Carta #1 de 11</div>
+        <div class="card-caption-sub" id="cardCaptionSub">Clique na carta para virar</div>
+      </div>
+
+      <!-- Painel Interativo do Pedido de Encontro (Exibido somente APÓS revelar a 11ª Carta!) -->
+      <div class="invite-response-panel" id="inviteResponsePanel">
+        <div class="invite-headline" id="inviteHeadlineText">💖 Aceitas sair comigo?</div>
+        <p class="invite-subtext" id="inviteSubText">
+          Assim como Umbreon e Sylveon, cada momento ao seu lado é mágico!
+        </p>
+        <div class="invite-buttons-row">
+          <button class="btn-accept-love" id="btnAcceptLove">
+            <span>💖 SIM, EU ACEITO!</span>
+          </button>
+          <button class="btn-dodge-no" id="btnDodgeNo">
+            <span>🤔 Deixa eu pensar...</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Botões de Navegação das Cartas -->
+      <div class="arena-controls">
+        <button class="btn-poke-secondary" id="btnPrevCard" style="display:none;">
+          <span>⬅ Anterior</span>
+        </button>
+        <button class="btn-poke-primary" id="btnActionCard">
+          <span>✨ Virar Carta</span>
+        </button>
+        <button class="btn-poke-secondary" id="btnRestartPack">
+          <span>📦 Novo Pacote</span>
+        </button>
+      </div>
+
+      <!-- Bandeja com as 11 Cartas do Pacote (Sem Spoilers das não reveladas!) -->
+      <div class="revealed-tray-section">
+        <div class="tray-header">
+          <span class="tray-title">🃏 Cartas Reveladas do Pacote (<span id="revealedCountText">0</span>/11)</span>
+          <div class="tray-legend">
+            <span>Clique em qualquer carta já revelada para inspecionar</span>
+          </div>
+        </div>
+        <div class="tray-grid" id="trayGrid"></div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- MODAL DE CELEBRAÇÃO QUANDO A PESSOA ACEITA O ENCONTRO! -->
+  <div class="poke-modal-backdrop" id="celebrationModal">
+    <div class="poke-modal-box">
+      <div class="modal-couple-art">
+        <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/197.png" alt="Umbreon" class="modal-poke-img">
+        <span class="modal-heart-icon">💖</span>
+        <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/700.png" alt="Sylveon" class="modal-poke-img">
+      </div>
+      <h2 class="modal-title">CAPTURA CRÍTICA! ENCONTRO CONFIRMADO! ✨</h2>
+      <p class="modal-text">
+        Umbreon &amp; Sylveon aprovaram a nossa dupla! Prepare-se para um encontro inesquecível cheio de momentos especiais! 🌙💖
+      </p>
+      <button class="btn-poke-primary" id="btnCloseCelebration" style="width:100%; justify-content:center;">
+        <span>🎉 Vai ser incrível!</span>
+      </button>
+    </div>
+  </div>
+
+  <script src="assets/js/app.js"></script>
+</body>
+</html>
