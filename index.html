@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
@@ -9,13 +9,11 @@
   <meta property="og:type" content="website">
   <meta property="og:title" content="Pokémon TCG • Simulador de Abertura de Booster">
   <meta property="og:description" content="Abra um pacote oficial de cartas Pokémon TCG com efeitos holográficos 3D!">
-  <meta property="og:image" content="https://tcgplayer-cdn.tcgplayer.com/product/504467_in_1000x1000.jpg">
+  <meta property="og:image" content="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/151.png">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='46' fill='%23ffffff' stroke='%230f172a' stroke-width='6'/%3E%3Cpath d='M4 50 A46 46 0 0 1 96 50 Z' fill='%23ee1515' stroke='%230f172a' stroke-width='6'/%3E%3Crect x='4' y='46' width='92' height='8' fill='%230f172a'/%3E%3Ccircle cx='50' cy='50' r='15' fill='%23ffffff' stroke='%230f172a' stroke-width='6'/%3E%3C/svg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=Plus+Jakarta+Sans:wght@500;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="assets/css/style.css">
   <style>
 /* ==========================================================================
    POKÉMON TCG — BOOSTER DE 11 CARTAS & UMBREON + SYLVEON COUPLE CARD
@@ -68,6 +66,7 @@ html, body {
   position: fixed;
   inset: 0;
   z-index: 0;
+  pointer-events: none;
   background:
     radial-gradient(circle at 50% 35%, rgba(42, 117, 187, 0.35) 0%, transparent 60%),
     radial-gradient(circle at 15% 20%, rgba(238, 21, 21, 0.22) 0%, transparent 45%),
@@ -458,11 +457,163 @@ body.mode-love-revealed .poke-bg-stadium {
 }
 
 .real-booster-img {
+  position: relative;
+  z-index: 3;
   width: 100%;
   height: 100%;
   object-fit: contain;
   display: block;
   pointer-events: none;
+}
+
+/* Fallback Oficial Scarlet & Violet 151 (caso o servidor da imagem externa bloqueie hotlink no GitHub Pages) */
+.booster-fallback-pack {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: 14px;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 50% 52%, rgba(244, 114, 182, 0.35) 0%, transparent 55%),
+    radial-gradient(circle at 20% 25%, rgba(56, 189, 248, 0.25) 0%, transparent 45%),
+    radial-gradient(circle at 80% 75%, rgba(250, 204, 21, 0.25) 0%, transparent 45%),
+    linear-gradient(180deg, #cbd5e1 0%, #f8fafc 7%, #f1f5f9 50%, #e2e8f0 93%, #94a3b8 100%);
+  border: 2px solid rgba(255, 255, 255, 0.85);
+  box-shadow: inset 0 0 25px rgba(255, 255, 255, 0.9);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  pointer-events: none;
+}
+
+.booster-fallback-crimp {
+  width: 100%;
+  height: 36px;
+  background: repeating-linear-gradient(
+    90deg,
+    #cbd5e1 0px,
+    #f8fafc 4px,
+    #94a3b8 8px
+  );
+  border-bottom: 2px solid #94a3b8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.booster-fallback-crimp.bottom {
+  height: 26px;
+  border-bottom: none;
+  border-top: 2px solid #94a3b8;
+}
+
+.booster-fallback-body {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px 12px;
+  position: relative;
+}
+
+.booster-fallback-logo-box {
+  text-align: center;
+  z-index: 2;
+}
+
+.booster-fallback-poke-logo {
+  font-size: 2.35rem;
+  font-weight: 900;
+  letter-spacing: 1.5px;
+  color: #ffcb05;
+  text-shadow:
+    -3px -3px 0 #1b356e,
+     3px -3px 0 #1b356e,
+    -3px  3px 0 #1b356e,
+     3px  3px 0 #1b356e,
+     0px  5px 12px rgba(0, 0, 0, 0.45);
+  line-height: 1;
+}
+
+.booster-fallback-tcg-bar {
+  display: inline-block;
+  margin-top: 4px;
+  background: linear-gradient(90deg, #dc2626, #ef4444, #dc2626);
+  color: #ffffff;
+  font-size: 0.62rem;
+  font-weight: 900;
+  letter-spacing: 1.8px;
+  padding: 3px 12px;
+  border-radius: 4px;
+  border: 1.5px solid #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+}
+
+.booster-fallback-mew-wrap {
+  position: relative;
+  width: 195px;
+  height: 195px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+
+.booster-fallback-151-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.95) 0%, rgba(244, 114, 182, 0.35) 58%, transparent 74%);
+  border: 3px solid rgba(236, 72, 153, 0.45);
+  box-shadow: 0 0 30px rgba(236, 72, 153, 0.4);
+}
+
+.booster-fallback-mew-img {
+  position: relative;
+  z-index: 3;
+  width: 175px;
+  height: 175px;
+  object-fit: contain;
+  filter: drop-shadow(0 10px 18px rgba(15, 23, 42, 0.45));
+}
+
+.booster-fallback-set-badge {
+  z-index: 2;
+  text-align: center;
+}
+
+.booster-fallback-151-num {
+  font-size: 2.2rem;
+  font-weight: 900;
+  background: linear-gradient(135deg, #db2777, #7c3aed, #2563eb);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  line-height: 1;
+  letter-spacing: 2px;
+}
+
+.booster-fallback-sv-tag {
+  display: inline-block;
+  margin-top: 3px;
+  background: linear-gradient(90deg, #991b1b, #6b21a8);
+  color: #fde047;
+  font-size: 0.65rem;
+  font-weight: 900;
+  letter-spacing: 1.2px;
+  padding: 3px 14px;
+  border-radius: 99px;
+  border: 1.5px solid #fde047;
+}
+
+.booster-fallback-cards-count {
+  font-size: 0.62rem;
+  font-weight: 900;
+  color: #1e293b;
+  letter-spacing: 0.8px;
+  margin-top: 4px;
 }
 
 /* Parte superior (14% do topo da imagem real do pacote) que rasga e voa */
@@ -2048,7 +2199,7 @@ body.mode-love-revealed .poke-bg-stadium {
       <div class="pack-badge-pill">
         <span>⚡ Booster Pack • 11 Cartas Estampas Ilustradas</span>
       </div>
-      <button class="btn-poke-round" id="btnSoundToggle" title="Ativar / Desativar Efeitos Sonoros">
+      <button type="button" class="btn-poke-round" id="btnSoundToggle" onclick="window.__pokeToggleSound && window.__pokeToggleSound()" title="Ativar / Desativar Efeitos Sonoros">
         🔊
       </button>
     </div>
@@ -2064,7 +2215,7 @@ body.mode-love-revealed .poke-bg-stadium {
       <!-- Feixes de luz que saem de dentro do pacote quando ele é rasgado -->
       <div class="pack-inner-light-beams" id="packInnerBeams"></div>
 
-      <div class="giant-booster-pack" id="giantBoosterPack" title="Clique para rasgar e abrir o pacote!">
+      <div class="giant-booster-pack" id="giantBoosterPack" onclick="window.__pokeOpenPack && window.__pokeOpenPack()" title="Clique para rasgar e abrir o pacote!">
         <!-- Pilha de cartas interna que sobe de dentro do pacote real ao abrir -->
         <div class="pack-emerging-cards" id="packEmergingCards">
           <div class="emerging-card-layer layer-3"></div>
@@ -2077,8 +2228,27 @@ body.mode-love-revealed .poke-bg-stadium {
           <img class="real-booster-img"
                src="https://archives.bulbagarden.net/media/upload/2/24/151_Booster.png"
                referrerpolicy="no-referrer"
-               alt="Topo do Booster Pack Pokémon 151"
-               onerror="if(!this.dataset.fallback){this.dataset.fallback='1';this.src='https://tcgplayer-cdn.tcgplayer.com/product/504467_in_1000x1000.jpg';}" />
+               alt=""
+               onerror="if(!this.dataset.fallback){this.dataset.fallback='1';this.src='https://tcgplayer-cdn.tcgplayer.com/product/504467_in_1000x1000.jpg';}else{this.style.display='none';}" />
+          <div class="booster-fallback-pack">
+            <div class="booster-fallback-crimp"></div>
+            <div class="booster-fallback-body">
+              <div class="booster-fallback-logo-box">
+                <div class="booster-fallback-poke-logo">POKÉMON</div>
+                <span class="booster-fallback-tcg-bar">ESTAMPAS ILUSTRADAS</span>
+              </div>
+              <div class="booster-fallback-mew-wrap">
+                <div class="booster-fallback-151-ring"></div>
+                <img class="booster-fallback-mew-img" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/151.png" alt="" />
+              </div>
+              <div class="booster-fallback-set-badge">
+                <div class="booster-fallback-151-num">151</div>
+                <span class="booster-fallback-sv-tag">ESCARLATE E VIOLETA</span>
+                <div class="booster-fallback-cards-count">CONTÉM 11 CARTAS</div>
+              </div>
+            </div>
+            <div class="booster-fallback-crimp bottom"></div>
+          </div>
           <div class="pack-holo-glare"></div>
         </div>
 
@@ -2094,8 +2264,27 @@ body.mode-love-revealed .poke-bg-stadium {
             <img class="real-booster-img"
                  src="https://archives.bulbagarden.net/media/upload/2/24/151_Booster.png"
                  referrerpolicy="no-referrer"
-                 alt="Booster Pack Oficial Pokémon Scarlet & Violet 151"
-                 onerror="if(!this.dataset.fallback){this.dataset.fallback='1';this.src='https://tcgplayer-cdn.tcgplayer.com/product/504467_in_1000x1000.jpg';}" />
+                 alt=""
+                 onerror="if(!this.dataset.fallback){this.dataset.fallback='1';this.src='https://tcgplayer-cdn.tcgplayer.com/product/504467_in_1000x1000.jpg';}else{this.style.display='none';}" />
+            <div class="booster-fallback-pack">
+              <div class="booster-fallback-crimp"></div>
+              <div class="booster-fallback-body">
+                <div class="booster-fallback-logo-box">
+                  <div class="booster-fallback-poke-logo">POKÉMON</div>
+                  <span class="booster-fallback-tcg-bar">ESTAMPAS ILUSTRADAS</span>
+                </div>
+                <div class="booster-fallback-mew-wrap">
+                  <div class="booster-fallback-151-ring"></div>
+                  <img class="booster-fallback-mew-img" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/151.png" alt="" />
+                </div>
+                <div class="booster-fallback-set-badge">
+                  <div class="booster-fallback-151-num">151</div>
+                  <span class="booster-fallback-sv-tag">ESCARLATE E VIOLETA</span>
+                  <div class="booster-fallback-cards-count">CONTÉM 11 CARTAS</div>
+                </div>
+              </div>
+              <div class="booster-fallback-crimp bottom"></div>
+            </div>
             <div class="pack-holo-sheen"></div>
             <div class="pack-holo-glare"></div>
           </div>
@@ -2103,7 +2292,7 @@ body.mode-love-revealed .poke-bg-stadium {
       </div>
 
       <div class="pack-cta-area" id="packCtaArea">
-        <button class="btn-poke-primary" id="btnOpenPack">
+        <button type="button" class="btn-poke-primary" id="btnOpenPack" onclick="window.__pokeOpenPack && window.__pokeOpenPack()">
           <span>✨ Abrir Pacote Booster</span>
         </button>
         <p class="pack-hint-text">
@@ -2113,7 +2302,7 @@ body.mode-love-revealed .poke-bg-stadium {
     </section>
 
     <!-- CENA 2: REVELAÇÃO DAS 11 CARTAS (DISCRETA ANTES DE VIRAR CADA CARTA) -->
-    <section class="reveal-stage" id="revealStage">
+    <section class="reveal-stage" id="revealStage" style="display:none;">
 
       <!-- Barra de progresso das 11 cartas -->
       <div class="card-progress-bar">
@@ -2134,7 +2323,7 @@ body.mode-love-revealed .poke-bg-stadium {
         <div class="deck-stack-shadow stack-card-2" id="stackShadow2"></div>
         <div class="deck-stack-shadow stack-card-1" id="stackShadow1"></div>
 
-        <div class="card-3d-wrapper" id="card3dWrapper">
+        <div class="card-3d-wrapper" id="card3dWrapper" onclick="window.__pokeFlipOrNext && window.__pokeFlipOrNext()">
           <div class="card-3d-inner" id="card3dInner">
 
             <!-- VERSO ORIGINAL OFICIAL DA CARTA POKÉMON TCG -->
@@ -2142,10 +2331,10 @@ body.mode-love-revealed .poke-bg-stadium {
               <!-- Imagem oficial de alta definição + SVG fiel de fallback -->
               <img class="official-cardback-img"
                    src="https://tcg.pokemon.com/assets/img/global/tcg-card-back-2x.jpg"
-                   alt="Pokémon TCG Card Back"
+                   alt=""
                    onerror="this.style.display='none';" />
 
-              <!-- Recreacão fiel do Verso Original Pokémon TCG (visível enquanto carrega ou offline) -->
+              <!-- Recreação fiel do Verso Original Pokémon TCG (visível enquanto carrega ou offline) -->
               <div class="orig-back-fallback">
                 <div class="orig-back-inner-border">
                   <div class="orig-back-vortex"></div>
@@ -2171,16 +2360,16 @@ body.mode-love-revealed .poke-bg-stadium {
       </div>
 
       <!-- Painel Interativo do Pedido de Encontro (Exibido somente APÓS revelar a 11ª Carta!) -->
-      <div class="invite-response-panel" id="inviteResponsePanel">
+      <div class="invite-response-panel" id="inviteResponsePanel" style="display:none;">
         <div class="invite-headline" id="inviteHeadlineText">💖 Aceitas sair comigo?</div>
         <p class="invite-subtext" id="inviteSubText">
           Assim como Umbreon e Sylveon, cada momento ao seu lado é mágico!
         </p>
         <div class="invite-buttons-row">
-          <button class="btn-accept-love" id="btnAcceptLove">
+          <button type="button" class="btn-accept-love" id="btnAcceptLove" onclick="window.__pokeAcceptLove && window.__pokeAcceptLove()">
             <span>💖 SIM, EU ACEITO!</span>
           </button>
-          <button class="btn-dodge-no" id="btnDodgeNo">
+          <button type="button" class="btn-dodge-no" id="btnDodgeNo" onclick="window.__pokeDodgeNo && window.__pokeDodgeNo()">
             <span>🤔 Deixa eu pensar...</span>
           </button>
         </div>
@@ -2188,13 +2377,13 @@ body.mode-love-revealed .poke-bg-stadium {
 
       <!-- Botões de Navegação das Cartas -->
       <div class="arena-controls">
-        <button class="btn-poke-secondary" id="btnPrevCard" style="display:none;">
+        <button type="button" class="btn-poke-secondary" id="btnPrevCard" style="display:none;" onclick="window.__pokePrevCard && window.__pokePrevCard()">
           <span>⬅ Anterior</span>
         </button>
-        <button class="btn-poke-primary" id="btnActionCard">
+        <button type="button" class="btn-poke-primary" id="btnActionCard" onclick="window.__pokeFlipOrNext && window.__pokeFlipOrNext()">
           <span>✨ Virar Carta</span>
         </button>
-        <button class="btn-poke-secondary" id="btnRestartPack">
+        <button type="button" class="btn-poke-secondary" id="btnRestartPack" onclick="window.__pokeRestartPack && window.__pokeRestartPack()">
           <span>📦 Novo Pacote</span>
         </button>
       </div>
@@ -2215,7 +2404,7 @@ body.mode-love-revealed .poke-bg-stadium {
   </main>
 
   <!-- MODAL DE CELEBRAÇÃO QUANDO A PESSOA ACEITA O ENCONTRO! -->
-  <div class="poke-modal-backdrop" id="celebrationModal">
+  <div class="poke-modal-backdrop" id="celebrationModal" style="display:none;">
     <div class="poke-modal-box">
       <div class="modal-couple-art">
         <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/197.png" alt="Umbreon" class="modal-poke-img">
@@ -2226,7 +2415,7 @@ body.mode-love-revealed .poke-bg-stadium {
       <p class="modal-text">
         Umbreon &amp; Sylveon aprovaram a nossa dupla! Prepare-se para um encontro inesquecível cheio de momentos especiais! 🌙💖
       </p>
-      <button class="btn-poke-primary" id="btnCloseCelebration" style="width:100%; justify-content:center;">
+      <button type="button" class="btn-poke-primary" id="btnCloseCelebration" style="width:100%; justify-content:center;" onclick="window.__pokeCloseCelebration && window.__pokeCloseCelebration()">
         <span>🎉 Vai ser incrível!</span>
       </button>
     </div>
@@ -2243,6 +2432,9 @@ body.mode-love-revealed .poke-bg-stadium {
 
 (function () {
   'use strict';
+
+  if (window.__POKE_BOOSTER_INITIALIZED__) return;
+  window.__POKE_BOOSTER_INITIALIZED__ = true;
 
   // =========================================================================
   // CONFIGURAÇÃO DO PEDIDO DE ENCONTRO (Personalizável via URL, PHP ou Modal)
@@ -2416,33 +2608,41 @@ body.mode-love-revealed .poke-bg-stadium {
 
   function getAudioCtx() {
     if (!soundEnabled) return null;
-    if (!audioCtx) {
-      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-      if (AudioContextClass) {
-        audioCtx = new AudioContextClass();
+    try {
+      if (!audioCtx) {
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        if (AudioContextClass) {
+          audioCtx = new AudioContextClass();
+        }
       }
+      if (audioCtx && audioCtx.state === 'suspended') {
+        audioCtx.resume().catch(function () {});
+      }
+      return audioCtx;
+    } catch (err) {
+      return null;
     }
-    if (audioCtx && audioCtx.state === 'suspended') {
-      audioCtx.resume();
-    }
-    return audioCtx;
   }
 
   function playTone(freq, type, duration, delay = 0, gainVal = 0.14) {
-    const ctx = getAudioCtx();
-    if (!ctx) return;
-    const now = ctx.currentTime + delay;
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.type = type;
-    osc.frequency.setValueAtTime(freq, now);
-    gain.gain.setValueAtTime(0.001, now);
-    gain.gain.exponentialRampToValueAtTime(gainVal, now + 0.025);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-    osc.start(now);
-    osc.stop(now + duration + 0.02);
+    try {
+      const ctx = getAudioCtx();
+      if (!ctx) return;
+      const now = ctx.currentTime + delay;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = type;
+      osc.frequency.setValueAtTime(freq, now);
+      gain.gain.setValueAtTime(0.001, now);
+      gain.gain.exponentialRampToValueAtTime(gainVal, now + 0.025);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(now);
+      osc.stop(now + duration + 0.02);
+    } catch (err) {
+      // Ignore audio errors on strict autoplay browsers
+    }
   }
 
   function playPackSlashAndOpenSound() {
@@ -3006,6 +3206,7 @@ body.mode-love-revealed .poke-bg-stadium {
       btnActionCard.innerHTML = `<span>✨ Virar Carta #${card.slot}</span>`;
       btnActionCard.style.display = 'inline-flex';
       inviteResponsePanel.classList.remove('visible');
+      inviteResponsePanel.style.display = 'none';
     } else {
       cardCaptionName.textContent = card.name;
       cardCaptionSub.textContent = `${card.subtitle} • ${card.rarityLabel}`;
@@ -3016,11 +3217,13 @@ body.mode-love-revealed .poke-bg-stadium {
         btnActionCard.innerHTML = `<span>Próxima Carta (#${nextSlot}/11) ➔</span>`;
         btnActionCard.style.display = 'inline-flex';
         inviteResponsePanel.classList.remove('visible');
+        inviteResponsePanel.style.display = 'none';
       } else {
         // 11ª Carta Revelada! Exibir o painel de resposta do Pedido de Encontro!
         btnActionCard.style.display = 'none';
         inviteHeadlineText.textContent = `💖 ${inviteConfig.questionTitle}`;
         inviteSubText.textContent = `${inviteConfig.customMessage} (${inviteConfig.datePlace})`;
+        inviteResponsePanel.style.display = 'flex';
         inviteResponsePanel.classList.add('visible');
       }
     }
@@ -3258,8 +3461,14 @@ body.mode-love-revealed .poke-bg-stadium {
       if (screenFlash) {
         screenFlash.className = 'screen-flash flash-active';
       }
-      packScene.classList.add('hidden');
-      revealStage.classList.add('active');
+      if (packScene) {
+        packScene.classList.add('hidden');
+        packScene.style.display = 'none';
+      }
+      if (revealStage) {
+        revealStage.style.display = 'flex';
+        revealStage.classList.add('active');
+      }
       currentCardIndex = 0;
       revealedStates = new Array(11).fill(false);
       loadCardSlot(0);
@@ -3268,9 +3477,17 @@ body.mode-love-revealed .poke-bg-stadium {
   }
 
   function resetToClosedPack() {
-    revealStage.classList.remove('active');
-    packScene.classList.remove('hidden');
-    boosterPack.classList.remove('stage-charge', 'stage-ripped', 'stage-emerge');
+    if (revealStage) {
+      revealStage.classList.remove('active');
+      revealStage.style.display = 'none';
+    }
+    if (packScene) {
+      packScene.classList.remove('hidden');
+      packScene.style.display = 'flex';
+    }
+    if (boosterPack) {
+      boosterPack.classList.remove('stage-charge', 'stage-ripped', 'stage-emerge');
+    }
     if (packSlashEffect) packSlashEffect.classList.remove('slash-active');
     if (packInnerBeams) packInnerBeams.classList.remove('beams-active');
     if (packAuraRing) packAuraRing.classList.remove('intense');
@@ -3281,6 +3498,67 @@ body.mode-love-revealed .poke-bg-stadium {
     revealedStates = new Array(11).fill(false);
     isAnimatingCard = false;
   }
+
+  function handleFlipOrNextCard() {
+    if (!revealedStates[currentCardIndex]) {
+      triggerCardReveal();
+    } else if (currentCardIndex < PACK_CARDS.length - 1) {
+      loadCardSlot(currentCardIndex + 1);
+    }
+  }
+
+  function handlePrevCard() {
+    if (!isAnimatingCard && currentCardIndex > 0) {
+      loadCardSlot(currentCardIndex - 1);
+    }
+  }
+
+  function handleAcceptLove() {
+    playCelebrationFanfare();
+    if (celebrationModal) {
+      celebrationModal.style.display = 'flex';
+      celebrationModal.classList.add('open');
+    }
+
+    for (let i = 0; i < 4; i++) {
+      setTimeout(() => {
+        spawnParticles({
+          x: window.innerWidth * (0.2 + Math.random() * 0.6),
+          y: window.innerHeight * (0.2 + Math.random() * 0.4),
+          count: 85,
+          colors: ['#ff4d94', '#fbbf24', '#60a5fa', '#ffffff'],
+          shapes: ['heart', 'star'],
+          speedMin: 4,
+          speedMax: 14,
+          sizeMin: 6,
+          sizeMax: 15
+        });
+      }, i * 320);
+    }
+  }
+
+  function handleCloseCelebration() {
+    if (celebrationModal) {
+      celebrationModal.classList.remove('open');
+      celebrationModal.style.display = 'none';
+    }
+  }
+
+  function handleToggleSound() {
+    soundEnabled = !soundEnabled;
+    if (btnSoundToggle) {
+      btnSoundToggle.textContent = soundEnabled ? '🔊' : '🔇';
+    }
+  }
+
+  // Expor funções globalmente para garantir 100% de interatividade
+  window.__pokeOpenPack = openBoosterPack;
+  window.__pokeFlipOrNext = handleFlipOrNextCard;
+  window.__pokePrevCard = handlePrevCard;
+  window.__pokeRestartPack = resetToClosedPack;
+  window.__pokeAcceptLove = handleAcceptLove;
+  window.__pokeCloseCelebration = handleCloseCelebration;
+  window.__pokeToggleSound = handleToggleSound;
 
   // =========================================================================
   // EVENT LISTENERS PRINCIPAIS
@@ -3293,31 +3571,15 @@ body.mode-love-revealed .poke-bg-stadium {
   }
 
   if (card3dWrapper) {
-    card3dWrapper.addEventListener('click', () => {
-      if (!revealedStates[currentCardIndex]) {
-        triggerCardReveal();
-      } else if (currentCardIndex < PACK_CARDS.length - 1) {
-        loadCardSlot(currentCardIndex + 1);
-      }
-    });
+    card3dWrapper.addEventListener('click', handleFlipOrNextCard);
   }
 
   if (btnActionCard) {
-    btnActionCard.addEventListener('click', () => {
-      if (!revealedStates[currentCardIndex]) {
-        triggerCardReveal();
-      } else if (currentCardIndex < PACK_CARDS.length - 1) {
-        loadCardSlot(currentCardIndex + 1);
-      }
-    });
+    btnActionCard.addEventListener('click', handleFlipOrNextCard);
   }
 
   if (btnPrevCard) {
-    btnPrevCard.addEventListener('click', () => {
-      if (!isAnimatingCard && currentCardIndex > 0) {
-        loadCardSlot(currentCardIndex - 1);
-      }
-    });
+    btnPrevCard.addEventListener('click', handlePrevCard);
   }
 
   if (btnRestartPack) {
@@ -3326,26 +3588,7 @@ body.mode-love-revealed .poke-bg-stadium {
 
   // Botão "Aceitar Encontro!" na 11ª carta
   if (btnAcceptLove) {
-    btnAcceptLove.addEventListener('click', () => {
-      playCelebrationFanfare();
-      celebrationModal.classList.add('open');
-
-      for (let i = 0; i < 4; i++) {
-        setTimeout(() => {
-          spawnParticles({
-            x: window.innerWidth * (0.2 + Math.random() * 0.6),
-            y: window.innerHeight * (0.2 + Math.random() * 0.4),
-            count: 85,
-            colors: ['#ff4d94', '#fbbf24', '#60a5fa', '#ffffff'],
-            shapes: ['heart', 'star'],
-            speedMin: 4,
-            speedMax: 14,
-            sizeMin: 6,
-            sizeMax: 15
-          });
-        }, i * 320);
-      }
-    });
+    btnAcceptLove.addEventListener('click', handleAcceptLove);
   }
 
   if (btnDodgeNo) {
@@ -3361,7 +3604,7 @@ body.mode-love-revealed .poke-bg-stadium {
     const dodgeAction = () => {
       dodgeCount++;
       if (dodgeCount >= playfulTexts.length) {
-        btnAcceptLove.click();
+        handleAcceptLove();
         return;
       }
       btnDodgeNo.textContent = playfulTexts[dodgeCount - 1];
@@ -3370,25 +3613,20 @@ body.mode-love-revealed .poke-bg-stadium {
       btnDodgeNo.style.transform = `translate(${offsetX}px, ${offsetY}px)`;
     };
 
+    window.__pokeDodgeNo = dodgeAction;
     btnDodgeNo.addEventListener('mouseenter', dodgeAction);
     btnDodgeNo.addEventListener('click', dodgeAction);
   }
 
   if (btnCloseCelebration) {
-    btnCloseCelebration.addEventListener('click', () => {
-      celebrationModal.classList.remove('open');
-    });
+    btnCloseCelebration.addEventListener('click', handleCloseCelebration);
   }
 
   if (btnSoundToggle) {
-    btnSoundToggle.addEventListener('click', () => {
-      soundEnabled = !soundEnabled;
-      btnSoundToggle.textContent = soundEnabled ? '🔊' : '🔇';
-    });
+    btnSoundToggle.addEventListener('click', handleToggleSound);
   }
 })();
 
   </script>
 </body>
 </html>
-
