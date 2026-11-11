@@ -1,0 +1,2003 @@
+/* ==========================================================================
+   POKÉMON TCG — BOOSTER DE 11 CARTAS & UMBREON + SYLVEON COUPLE CARD
+   - Revelação discreta (sem spoilers antes de virar cada carta)
+   - Verso original oficial das cartas Pokémon TCG
+   - Animação cinematográfica de corte do pacote e subida das cartas
+   - 11ª Carta Full-Art de Casal: Umbreon & Sylveon ex
+   ========================================================================== */
+
+:root {
+  --poke-yellow: #ffcb05;
+  --poke-yellow-glow: rgba(255, 203, 5, 0.65);
+  --poke-blue: #2a75bb;
+  --poke-blue-dark: #1b356e;
+  --poke-red: #ee1515;
+  --poke-red-glow: rgba(238, 21, 21, 0.6);
+  --umbreon-gold: #fbbf24;
+  --umbreon-night: #0f172a;
+  --sylveon-pink: #ff4d94;
+  --sylveon-pastel: #fbcfe8;
+  --sylveon-blue: #60a5fa;
+  --bg-deep: #090d1a;
+  --text-light: #ffffff;
+  --text-muted: #b0c4de;
+  --card-width: 315px;
+  --card-height: 440px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+html, body {
+  width: 100%;
+  min-height: 100vh;
+  overflow-x: hidden;
+  background-color: var(--bg-deep);
+  color: var(--text-light);
+  font-family: 'Plus Jakarta Sans', 'Fredoka', system-ui, -apple-system, sans-serif;
+}
+
+/* ==========================================================================
+   CHAMATIVO POKÉMON STADIUM BACKGROUND & FLOATING DECORATIONS
+   ========================================================================== */
+.poke-bg-stadium {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background:
+    radial-gradient(circle at 50% 35%, rgba(42, 117, 187, 0.35) 0%, transparent 60%),
+    radial-gradient(circle at 15% 20%, rgba(238, 21, 21, 0.22) 0%, transparent 45%),
+    radial-gradient(circle at 85% 80%, rgba(255, 203, 5, 0.2) 0%, transparent 50%),
+    linear-gradient(180deg, #0b132b 0%, #090d1a 55%, #120924 100%);
+  overflow: hidden;
+  transition: background 0.9s ease;
+}
+
+body.mode-rare-revealed .poke-bg-stadium {
+  background:
+    radial-gradient(circle at 50% 42%, rgba(255, 203, 5, 0.42) 0%, rgba(126, 48, 225, 0.28) 45%, #060814 85%);
+}
+
+body.mode-love-revealed .poke-bg-stadium {
+  background:
+    radial-gradient(circle at 50% 38%, rgba(255, 77, 148, 0.48) 0%, rgba(30, 27, 75, 0.7) 48%, #070510 90%);
+}
+
+/* Fullscreen Flash Overlay */
+.screen-flash {
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(circle, #ffffff 0%, #fffbeb 45%, transparent 100%);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 40;
+}
+
+.screen-flash.flash-active {
+  animation: screenFlashAnim 0.75s ease-out forwards;
+}
+
+.screen-flash.flash-love {
+  background: radial-gradient(circle, #ffffff 0%, #ff85c0 40%, #fbbf24 75%, transparent 100%);
+  animation: screenFlashAnim 1.1s ease-out forwards;
+}
+
+@keyframes screenFlashAnim {
+  0% { opacity: 0; }
+  20% { opacity: 0.92; }
+  100% { opacity: 0; }
+}
+
+/* Giant Watermark Pokéball in the center background */
+.giant-bg-pokeball {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 680px;
+  height: 680px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  border: 26px solid rgba(255, 255, 255, 0.03);
+  pointer-events: none;
+  z-index: 0;
+  animation: slowSpin 50s linear infinite;
+}
+
+.giant-bg-pokeball::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: -26px;
+  right: -26px;
+  height: 26px;
+  background: rgba(255, 255, 255, 0.03);
+  transform: translateY(-50%);
+}
+
+.giant-bg-pokeball::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 160px;
+  height: 160px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  border: 26px solid rgba(255, 255, 255, 0.04);
+  background: rgba(9, 13, 26, 0.6);
+}
+
+@keyframes slowSpin {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+.bg-grid-pattern {
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255, 203, 5, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(42, 117, 187, 0.06) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: radial-gradient(circle at center, black 35%, transparent 85%);
+  -webkit-mask-image: radial-gradient(circle at center, black 35%, transparent 85%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+#fxCanvas {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 35;
+}
+
+/* ==========================================================================
+   TOP POKÉMON HEADER BAR
+   ========================================================================== */
+.poke-header {
+  position: relative;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 2rem;
+  background: linear-gradient(90deg, rgba(27, 53, 110, 0.92) 0%, rgba(15, 23, 42, 0.95) 50%, rgba(27, 53, 110, 0.92) 100%);
+  border-bottom: 4px solid var(--poke-yellow);
+  box-shadow: 0 6px 28px rgba(0, 0, 0, 0.6), 0 0 20px rgba(255, 203, 5, 0.25);
+}
+
+.poke-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+}
+
+.pokeball-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: linear-gradient(180deg, var(--poke-red) 0%, var(--poke-red) 46%, #1e293b 46%, #1e293b 54%, #ffffff 54%, #e2e8f0 100%);
+  border: 3px solid #ffffff;
+  box-shadow: 0 0 16px var(--poke-red-glow), inset -4px -4px 8px rgba(0,0,0,0.35);
+  position: relative;
+  animation: pokeballWobble 4s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+.pokeball-icon::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 14px;
+  height: 14px;
+  transform: translate(-50%, -50%);
+  background: #ffffff;
+  border: 3px solid #1e293b;
+  border-radius: 50%;
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.9);
+}
+
+@keyframes pokeballWobble {
+  0%, 80%, 100% { transform: rotate(0deg); }
+  85% { transform: rotate(-18deg); }
+  90% { transform: rotate(18deg); }
+  95% { transform: rotate(-10deg); }
+}
+
+.poke-logo-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.poke-title {
+  font-size: 1.55rem;
+  font-weight: 900;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--poke-yellow);
+  text-shadow:
+    -2px -2px 0 var(--poke-blue),
+     2px -2px 0 var(--poke-blue),
+    -2px  2px 0 var(--poke-blue),
+     2px  2px 0 var(--poke-blue),
+     0px  4px 12px rgba(255, 203, 5, 0.55);
+  line-height: 1.1;
+}
+
+.poke-subtitle {
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: #93c5fd;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.pack-badge-pill {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: linear-gradient(135deg, rgba(42, 117, 187, 0.3), rgba(255, 203, 5, 0.18));
+  border: 2px solid var(--poke-yellow);
+  padding: 0.45rem 1rem;
+  border-radius: 999px;
+  font-size: 0.84rem;
+  font-weight: 800;
+  color: #fff;
+  box-shadow: 0 0 15px rgba(255, 203, 5, 0.22);
+}
+
+.btn-poke-round {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 203, 5, 0.6);
+  background: rgba(15, 23, 42, 0.85);
+  color: var(--poke-yellow);
+  font-size: 1.15rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.btn-poke-round:hover {
+  opacity: 1 !important;
+  transform: scale(1.1);
+  background: var(--poke-yellow);
+  color: #090d1a;
+  box-shadow: 0 0 16px var(--poke-yellow-glow);
+}
+
+/* ==========================================================================
+   MAIN CENTER STAGE — SOMENTE UM PACOTE GRANDE NO CENTRO
+   ========================================================================== */
+.center-stage {
+  position: relative;
+  z-index: 10;
+  min-height: calc(100vh - 76px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem 1rem 2.5rem;
+}
+
+/* ==========================================================================
+   CINEMATIC 3D BOOSTER PACK IN CENTER OF SCREEN
+   ========================================================================== */
+.pack-scene {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  perspective: 1500px;
+}
+
+.pack-scene.hidden {
+  display: none !important;
+}
+
+.pack-aura-ring {
+  position: absolute;
+  width: 450px;
+  height: 450px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 203, 5, 0.35) 0%, rgba(238, 21, 21, 0.18) 45%, transparent 72%);
+  filter: blur(22px);
+  animation: auraPulse 3s ease-in-out infinite alternate;
+  pointer-events: none;
+  transition: all 0.6s ease;
+}
+
+.pack-aura-ring.intense {
+  width: 620px;
+  height: 620px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.8) 0%, rgba(255, 203, 5, 0.65) 40%, rgba(56, 189, 248, 0.4) 68%, transparent 85%);
+}
+
+@keyframes auraPulse {
+  0% { transform: scale(0.92); opacity: 0.7; }
+  100% { transform: scale(1.12); opacity: 1; }
+}
+
+/* Feixes de luz internos quando o topo do pacote é rasgado */
+.pack-inner-light-beams {
+  position: absolute;
+  top: -120px;
+  width: 480px;
+  height: 480px;
+  background: conic-gradient(
+    from 240deg at 50% 80%,
+    transparent 0deg,
+    rgba(255, 203, 5, 0.75) 12deg,
+    transparent 24deg,
+    rgba(255, 255, 255, 0.85) 38deg,
+    transparent 52deg,
+    rgba(56, 189, 248, 0.75) 68deg,
+    transparent 85deg,
+    rgba(255, 203, 5, 0.8) 102deg,
+    transparent 120deg
+  );
+  filter: blur(8px);
+  opacity: 0;
+  transform: scaleY(0.2);
+  transform-origin: bottom center;
+  pointer-events: none;
+  z-index: 2;
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.pack-inner-light-beams.beams-active {
+  opacity: 1;
+  transform: scaleY(1.25);
+}
+
+.giant-booster-pack {
+  position: relative;
+  width: 340px;
+  height: 515px;
+  cursor: pointer;
+  transform-style: preserve-3d;
+  transition: transform 0.2s ease-out;
+  animation: packFloat 3.6s ease-in-out infinite;
+  z-index: 5;
+}
+
+@keyframes packFloat {
+  0%, 100% { transform: translateY(0px) rotate(-1deg); }
+  50% { transform: translateY(-14px) rotate(1deg); }
+}
+
+/* Pilha de Cartas Interna que Sobe de Dentro do Pacote ao Abrir! */
+.pack-emerging-cards {
+  position: absolute;
+  top: 48px;
+  left: 50%;
+  width: 280px;
+  height: 392px;
+  transform: translateX(-50%) translateY(25px) scale(0.92);
+  z-index: 2;
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 0.85s cubic-bezier(0.19, 1, 0.22, 1), opacity 0.35s ease;
+}
+
+.emerging-card-layer {
+  position: absolute;
+  inset: 0;
+  border-radius: 15px;
+  background: url('https://tcg.pokemon.com/assets/img/global/tcg-card-back-2x.jpg') center/cover no-repeat, #1b356e;
+  border: 2px solid rgba(255, 255, 255, 0.65);
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.75);
+}
+
+.emerging-card-layer.layer-3 {
+  transform: translateY(10px) rotate(-4deg) scale(0.95);
+  filter: brightness(0.75);
+}
+
+.emerging-card-layer.layer-2 {
+  transform: translateY(5px) rotate(3deg) scale(0.98);
+  filter: brightness(0.88);
+}
+
+.emerging-card-layer.layer-1 {
+  box-shadow:
+    0 15px 40px rgba(0, 0, 0, 0.85),
+    0 0 35px rgba(255, 203, 5, 0.85);
+}
+
+/* ==========================================================================
+   REAL ORIGINAL POKÉMON BOOSTER PACK IMAGE WITH 3D TOP-SLICE RIPPING
+   ========================================================================== */
+.pack-real-slice {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 14px;
+  overflow: hidden;
+  filter: drop-shadow(0 25px 50px rgba(0, 0, 0, 0.78));
+}
+
+.real-booster-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  pointer-events: none;
+}
+
+/* Parte superior (14% do topo da imagem real do pacote) que rasga e voa */
+.pack-top-slice {
+  z-index: 8;
+  transform-origin: top right;
+  clip-path: polygon(
+    0% 0%,
+    100% 0%,
+    100% 13.5%,
+    88% 15%,
+    74% 13.2%,
+    60% 15.2%,
+    45% 13.2%,
+    30% 15%,
+    14% 13.2%,
+    0% 14.5%
+  );
+}
+
+/* Parte inferior (86% inferiores da imagem real do pacote) */
+.pack-bottom-slice {
+  clip-path: polygon(
+    0% 14.2%,
+    14% 13%,
+    30% 14.8%,
+    45% 13%,
+    60% 15%,
+    74% 13%,
+    88% 14.8%,
+    100% 13.2%,
+    100% 100%,
+    0% 100%
+  );
+}
+
+.pack-wrapper-shell {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 6;
+  transition: transform 0.85s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.65s ease;
+}
+
+.pack-holo-sheen {
+  position: absolute;
+  inset: -40%;
+  background: linear-gradient(
+    125deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.32) 47%,
+    rgba(255, 203, 5, 0.28) 50%,
+    rgba(56, 189, 248, 0.25) 53%,
+    transparent 70%
+  );
+  transform: rotate(15deg) translateX(-55%);
+  animation: packFoilSweep 4.2s ease-in-out infinite;
+  pointer-events: none;
+  mix-blend-mode: screen;
+  z-index: 4;
+}
+
+@keyframes packFoilSweep {
+  0%, 100% { transform: rotate(15deg) translateX(-60%); }
+  50% { transform: rotate(15deg) translateX(60%); }
+}
+
+/* Efeito de Corte de Energia (Slash) na altura do lacre superior (13.8%) */
+.pack-slash-effect {
+  position: absolute;
+  top: 13.2%;
+  left: -30px;
+  width: 0%;
+  height: 12px;
+  background: linear-gradient(90deg, transparent, #ffffff, #38bdf8, #ffcb05, #ffffff);
+  border-radius: 99px;
+  box-shadow:
+    0 0 20px #ffffff,
+    0 0 40px #ffcb05,
+    0 0 60px #38bdf8;
+  z-index: 12;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.pack-slash-effect.slash-active {
+  animation: slashAcrossPack 0.42s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes slashAcrossPack {
+  0% { width: 0%; left: -20px; opacity: 1; }
+  65% { width: 118%; left: -10px; opacity: 1; transform: scaleY(1.5); }
+  100% { width: 120%; left: 0px; opacity: 0; transform: scaleY(0.2); }
+}
+
+.pack-tear-line {
+  position: absolute;
+  top: 13.5%;
+  left: 6px;
+  right: 6px;
+  height: 4px;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--poke-yellow) 0px,
+    var(--poke-yellow) 10px,
+    transparent 10px,
+    transparent 18px
+  );
+  z-index: 10;
+  filter: drop-shadow(0 0 8px var(--poke-yellow));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: tearGlow 1.2s ease-in-out infinite alternate;
+  transition: opacity 0.25s ease;
+}
+
+.crimp-cut-hint {
+  font-size: 0.64rem;
+  font-weight: 900;
+  letter-spacing: 0.9px;
+  color: #0f172a;
+  background: rgba(255, 203, 5, 0.95);
+  padding: 2px 11px;
+  border-radius: 99px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.55);
+  white-space: nowrap;
+}
+
+@keyframes tearGlow {
+  from { opacity: 0.72; transform: scaleX(0.98); }
+  to { opacity: 1; transform: scaleX(1.02); }
+}
+
+/* ==========================================================================
+   MULTI-STAGE BOOSTER PACK OPENING ANIMATION STATES
+   ========================================================================== */
+.giant-booster-pack.stage-charge {
+  animation: packChargeTremble 0.45s ease-in-out forwards;
+}
+
+@keyframes packChargeTremble {
+  0% { transform: scale(1) rotate(0deg); }
+  25% { transform: scale(1.05) rotate(-2deg); }
+  50% { transform: scale(1.07) rotate(2deg); }
+  75% { transform: scale(1.08) rotate(-1.5deg); }
+  100% { transform: scale(1.08) rotate(0deg); }
+}
+
+/* Topo arrancado da imagem real voando em 3D */
+.giant-booster-pack.stage-ripped .pack-top-slice {
+  animation: crimpFlyAway 0.75s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.giant-booster-pack.stage-ripped .pack-tear-line {
+  opacity: 0;
+}
+
+@keyframes crimpFlyAway {
+  0% {
+    transform: translate(0, 0) rotateZ(0deg) rotateX(0deg);
+    opacity: 1;
+  }
+  40% {
+    transform: translate(45px, -55px) rotateZ(18deg) rotateX(35deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(190px, -140px) rotateZ(48deg) rotateX(75deg);
+    opacity: 0;
+  }
+}
+
+/* Cartas emergindo para cima enquanto a embalagem desce! */
+.giant-booster-pack.stage-emerge .pack-emerging-cards {
+  opacity: 1;
+  transform: translateX(-50%) translateY(-85px) scale(1.04);
+}
+
+.giant-booster-pack.stage-emerge .pack-wrapper-shell {
+  transform: translateY(190px) scale(0.92) rotateX(-18deg);
+  opacity: 0;
+}
+
+/* CTA Button under the pack */
+.pack-cta-area {
+  margin-top: 1.5rem;
+  text-align: center;
+  z-index: 6;
+  transition: opacity 0.3s ease;
+}
+
+.btn-poke-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.92rem 2.1rem;
+  font-size: 1.05rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: #0f172a;
+  background: linear-gradient(180deg, #ffe047 0%, #ffcb05 55%, #f59e0b 100%);
+  border: 3px solid #ffffff;
+  border-radius: 999px;
+  cursor: pointer;
+  box-shadow:
+    0 10px 25px rgba(255, 203, 5, 0.45),
+    0 0 0 4px var(--poke-blue),
+    inset 0 2px 0 rgba(255, 255, 255, 0.8);
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.btn-poke-primary:hover {
+  transform: translateY(-3px) scale(1.04);
+  box-shadow:
+    0 14px 32px rgba(255, 203, 5, 0.7),
+    0 0 0 4px var(--poke-red),
+    inset 0 2px 0 rgba(255, 255, 255, 0.9);
+}
+
+.pack-hint-text {
+  margin-top: 0.65rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+/* ==========================================================================
+   REVEAL STAGE (11 CARDS EXPERIENCE — DISCREET UNTIL REVEALED)
+   ========================================================================== */
+.reveal-stage {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 1180px;
+  position: relative;
+  z-index: 12;
+}
+
+.reveal-stage.active {
+  display: flex;
+  animation: fadeInStage 0.45s ease forwards;
+}
+
+@keyframes fadeInStage {
+  from { opacity: 0; transform: translateY(15px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.card-progress-bar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.55rem;
+  margin-bottom: 0.85rem;
+  width: 100%;
+}
+
+.progress-header {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.progress-counter-badge {
+  background: rgba(15, 23, 42, 0.9);
+  border: 2px solid var(--poke-yellow);
+  color: var(--poke-yellow);
+  font-weight: 900;
+  font-size: 0.9rem;
+  padding: 0.35rem 1rem;
+  border-radius: 99px;
+  box-shadow: 0 0 15px rgba(255, 203, 5, 0.2);
+}
+
+.rarity-tier-banner {
+  padding: 0.35rem 1.15rem;
+  border-radius: 99px;
+  font-size: 0.86rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.9px;
+  transition: all 0.35s ease;
+}
+
+.rarity-tier-banner.tier-normal {
+  background: rgba(42, 117, 187, 0.32);
+  border: 2px solid rgba(96, 165, 250, 0.6);
+  color: #e0f2fe;
+}
+
+.rarity-tier-banner.tier-rare {
+  background: linear-gradient(90deg, #f59e0b, #ec4899, #8b5cf6);
+  border: 2px solid #ffffff;
+  color: #ffffff;
+  box-shadow: 0 0 22px rgba(245, 158, 11, 0.8);
+  animation: badgePulse 1s ease-in-out infinite alternate;
+}
+
+.rarity-tier-banner.tier-love {
+  background: linear-gradient(90deg, #1e1b4b, #ff4d94, #fbbf24, #ff4d94);
+  background-size: 200% 100%;
+  border: 2px solid #ffffff;
+  color: #ffffff;
+  box-shadow: 0 0 30px rgba(255, 77, 148, 0.95);
+  animation: rainbowShift 2.5s linear infinite, badgePulse 0.8s ease-in-out infinite alternate;
+}
+
+@keyframes badgePulse {
+  from { transform: scale(1); }
+  to { transform: scale(1.05); }
+}
+
+@keyframes rainbowShift {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
+}
+
+/* 11 Step Pips — Todos neutros até que a carta seja revelada! */
+.progress-pips {
+  display: flex;
+  align-items: center;
+  gap: 0.42rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.step-pip {
+  min-width: 34px;
+  height: 34px;
+  padding: 0 6px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.78rem;
+  font-weight: 900;
+  background: rgba(15, 23, 42, 0.8);
+  border: 2px solid rgba(148, 163, 184, 0.32);
+  color: #94a3b8;
+  transition: all 0.25s ease;
+  cursor: pointer;
+}
+
+.step-pip.active {
+  transform: scale(1.15);
+  border-color: var(--poke-yellow);
+  box-shadow: 0 0 12px rgba(255, 203, 5, 0.5);
+  color: #ffffff;
+  background: var(--poke-blue);
+}
+
+.step-pip.revealed-normal {
+  background: rgba(34, 197, 94, 0.22);
+  border-color: #4ade80;
+  color: #ffffff;
+}
+
+.step-pip.revealed-rare {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.45), rgba(168, 85, 247, 0.45));
+  border-color: var(--poke-yellow);
+  color: #fde047;
+  box-shadow: 0 0 10px rgba(255, 203, 5, 0.4);
+}
+
+.step-pip.revealed-love {
+  background: linear-gradient(135deg, #ff4d94, #fbbf24);
+  border-color: #ffffff;
+  color: #ffffff;
+  box-shadow: 0 0 14px rgba(255, 77, 148, 0.7);
+}
+
+/* ==========================================================================
+   ACTIVE CARD SPOTLIGHT ARENA & DECK STACK SHADOW
+   ========================================================================== */
+.card-arena {
+  position: relative;
+  width: 100%;
+  min-height: 475px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  perspective: 1500px;
+  margin: 0.2rem 0 0.85rem;
+}
+
+/* Cartas empilhadas discretamente atrás da carta ativa */
+.deck-stack-shadow {
+  position: absolute;
+  width: var(--card-width);
+  height: var(--card-height);
+  border-radius: 18px;
+  background: url('https://tcg.pokemon.com/assets/img/global/tcg-card-back-2x.jpg') center/cover no-repeat, #1b356e;
+  border: 1.5px solid rgba(255, 255, 255, 0.22);
+  pointer-events: none;
+  transition: all 0.4s ease;
+}
+
+.deck-stack-shadow.stack-card-1 {
+  transform: translate(7px, 7px) rotate(1.8deg);
+  filter: brightness(0.65);
+  z-index: 3;
+}
+
+.deck-stack-shadow.stack-card-2 {
+  transform: translate(14px, 14px) rotate(3.5deg);
+  filter: brightness(0.45);
+  z-index: 2;
+}
+
+/* God Rays behind Rare & Final Card (Only activate on reveal!) */
+.arena-god-rays {
+  position: absolute;
+  width: 640px;
+  height: 640px;
+  border-radius: 50%;
+  background: repeating-conic-gradient(
+    from 0deg,
+    rgba(255, 203, 5, 0.3) 0deg 12deg,
+    transparent 12deg 24deg
+  );
+  mask-image: radial-gradient(circle, black 10%, transparent 68%);
+  -webkit-mask-image: radial-gradient(circle, black 10%, transparent 68%);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 1;
+  transition: opacity 0.45s ease;
+}
+
+.arena-god-rays.active-rare {
+  opacity: 1;
+  animation: spinRays 14s linear infinite;
+}
+
+.arena-god-rays.active-love {
+  opacity: 1;
+  width: 780px;
+  height: 780px;
+  background: repeating-conic-gradient(
+    from 0deg,
+    rgba(255, 77, 148, 0.38) 0deg 10deg,
+    rgba(251, 191, 36, 0.34) 10deg 20deg,
+    transparent 20deg 30deg
+  );
+  animation: spinRays 9s linear infinite;
+}
+
+@keyframes spinRays {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.love-magic-circle {
+  position: absolute;
+  width: 480px;
+  height: 480px;
+  border-radius: 50%;
+  border: 3px dashed rgba(255, 77, 148, 0.75);
+  box-shadow:
+    0 0 55px rgba(255, 77, 148, 0.55),
+    inset 0 0 40px rgba(251, 191, 36, 0.35);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 2;
+  transition: opacity 0.5s ease;
+}
+
+.love-magic-circle.active {
+  opacity: 1;
+  animation: magicCircleSpin 12s linear infinite;
+}
+
+@keyframes magicCircleSpin {
+  0% { transform: rotate(0deg) scale(0.96); }
+  50% { transform: rotate(180deg) scale(1.04); }
+  100% { transform: rotate(360deg) scale(0.96); }
+}
+
+.shockwave-ring {
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: 6px solid #ffcb05;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 15;
+}
+
+.shockwave-ring.boom-rare {
+  animation: shockwaveExpand 0.85s ease-out forwards;
+}
+
+.shockwave-ring.boom-love {
+  border-color: #ff4d94;
+  box-shadow: 0 0 45px #fbbf24;
+  animation: shockwaveExpandLove 1.3s ease-out forwards;
+}
+
+@keyframes shockwaveExpand {
+  0% { width: 40px; height: 40px; opacity: 1; border-width: 10px; }
+  100% { width: 680px; height: 680px; opacity: 0; border-width: 1px; }
+}
+
+@keyframes shockwaveExpandLove {
+  0% { width: 40px; height: 40px; opacity: 1; border-width: 16px; }
+  100% { width: 950px; height: 950px; opacity: 0; border-width: 1px; }
+}
+
+/* ==========================================================================
+   3D CARD OBJECT & ORIGINAL OFFICIAL POKÉMON CARD BACK
+   ========================================================================== */
+.card-3d-wrapper {
+  position: relative;
+  width: var(--card-width);
+  height: var(--card-height);
+  z-index: 5;
+  perspective: 1400px;
+  cursor: pointer;
+  transition: transform 0.15s ease-out;
+}
+
+.card-3d-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.card-face {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 17px;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  overflow: hidden;
+}
+
+/* VERSO ORIGINAL OFICIAL DA CARTA POKÉMON */
+.card-back {
+  background: #182b59;
+  box-shadow:
+    0 22px 48px rgba(0, 0, 0, 0.78),
+    0 0 0 1px rgba(255, 255, 255, 0.12);
+}
+
+.official-cardback-img {
+  position: relative;
+  z-index: 3;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  display: block;
+  border-radius: 17px;
+}
+
+/* Fallback CSS fiel ao design original do verso Pokémon TCG */
+.orig-back-fallback {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: #1b326b;
+  padding: 13px;
+  display: flex;
+}
+
+.orig-back-inner-border {
+  position: relative;
+  flex: 1;
+  border-radius: 10px;
+  background: radial-gradient(circle at 50% 50%, #3b82f6 0%, #1d4ed8 48%, #0f1f4b 92%);
+  border: 2px solid #60a5fa;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 10px;
+}
+
+.orig-back-vortex {
+  position: absolute;
+  inset: -30%;
+  background:
+    repeating-conic-gradient(
+      from 0deg,
+      rgba(147, 197, 253, 0.16) 0deg 15deg,
+      transparent 15deg 30deg
+    ),
+    radial-gradient(circle, rgba(255, 255, 255, 0.25) 0%, transparent 65%);
+  animation: slowSpin 35s linear infinite;
+}
+
+.orig-back-logo {
+  position: relative;
+  z-index: 2;
+  font-size: 1.55rem;
+  font-weight: 900;
+  color: var(--poke-yellow);
+  letter-spacing: 2px;
+  text-shadow:
+    -2px -2px 0 #1b356e,
+     2px -2px 0 #1b356e,
+    -2px  2px 0 #1b356e,
+     2px  2px 0 #1b356e;
+}
+
+.orig-back-logo.bottom-logo {
+  transform: rotate(180deg);
+}
+
+.orig-back-pokeball {
+  position: relative;
+  z-index: 2;
+  width: 118px;
+  height: 118px;
+  border-radius: 50%;
+  transform: rotate(-16deg);
+  background: linear-gradient(180deg, #ee1515 0%, #ee1515 45%, #0f172a 45%, #0f172a 55%, #ffffff 55%, #e2e8f0 100%);
+  border: 6px solid #0f172a;
+  box-shadow: 0 0 28px rgba(255, 255, 255, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.orig-pokeball-center {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 6px solid #0f172a;
+}
+
+/* Detalhe sutilíssimo (quase imperceptível) no canto ao passar o mouse em carta rara ainda fechada */
+.card-3d-wrapper.subtle-rare-gleam:hover .card-back {
+  box-shadow:
+    0 22px 48px rgba(0, 0, 0, 0.78),
+    0 0 12px rgba(255, 203, 5, 0.18);
+}
+
+/* Frente da Carta */
+.card-front {
+  transform: rotateY(180deg);
+  background: #1e293b;
+  box-shadow: 0 22px 50px rgba(0, 0, 0, 0.8);
+}
+
+.real-pokemon-card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  display: block;
+  border-radius: 16px;
+}
+
+/* Holographic Foil Overlay for Revealed Cards */
+.card-holo-overlay {
+  position: absolute;
+  inset: 0;
+  border-radius: 16px;
+  pointer-events: none;
+  z-index: 6;
+  mix-blend-mode: color-dodge;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  background:
+    radial-gradient(
+      circle at var(--pointer-x, 50%) var(--pointer-y, 50%),
+      rgba(255, 255, 255, 0.65) 0%,
+      rgba(255, 203, 5, 0.35) 25%,
+      rgba(236, 72, 153, 0.3) 50%,
+      rgba(59, 130, 246, 0.25) 75%,
+      transparent 100%
+    );
+}
+
+.card-sparkles-overlay {
+  position: absolute;
+  inset: 0;
+  border-radius: 16px;
+  pointer-events: none;
+  z-index: 7;
+  opacity: 0;
+  background-image:
+    radial-gradient(2px 2px at 20% 30%, #fff, transparent),
+    radial-gradient(2px 2px at 75% 20%, #ffcb05, transparent),
+    radial-gradient(2.5px 2.5px at 40% 70%, #fff, transparent),
+    radial-gradient(2px 2px at 82% 75%, #ff85c0, transparent),
+    radial-gradient(2.5px 2.5px at 18% 82%, #60a5fa, transparent),
+    radial-gradient(3px 3px at 60% 45%, #fff, transparent);
+  mix-blend-mode: screen;
+}
+
+.card-3d-wrapper.is-rare .card-front {
+  border: 2.5px solid var(--poke-yellow);
+  box-shadow:
+    0 20px 55px rgba(0, 0, 0, 0.85),
+    0 0 38px rgba(255, 203, 5, 0.7);
+}
+
+.card-3d-wrapper.is-rare .card-holo-overlay,
+.card-3d-wrapper.is-love .card-holo-overlay {
+  opacity: 0.72;
+}
+
+.card-3d-wrapper.is-rare .card-sparkles-overlay,
+.card-3d-wrapper.is-love .card-sparkles-overlay {
+  opacity: 0.92;
+  animation: twinkleSparkles 2s ease-in-out infinite alternate;
+}
+
+@keyframes twinkleSparkles {
+  0% { opacity: 0.45; transform: scale(0.98); }
+  100% { opacity: 1; transform: scale(1.02); }
+}
+
+/* ==========================================================================
+   THREE TIERS OF REVEAL KEYFRAME ANIMATIONS
+   IMPORTANTE: Não usar `filter` em `.card-3d-inner`, pois no CSS 3D qualquer
+   `filter` achata o `transform-style: preserve-3d` e esconde `.card-front`!
+   ========================================================================== */
+
+/* TIER 1: Normal Card Reveal (Cards 1 to 6) */
+.card-3d-inner.anim-reveal-normal {
+  animation: revealNormalCard 0.72s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes revealNormalCard {
+  0% {
+    transform: translateY(0) scale(1) rotateY(0deg);
+  }
+  42% {
+    transform: translateY(-28px) scale(1.07) rotateY(90deg);
+  }
+  100% {
+    transform: translateY(0) scale(1) rotateY(180deg);
+  }
+}
+
+/* TIER 2: Detailed Rare Illustrated Card Reveal (Cards 7, 8, 9, 10) */
+.card-3d-inner.anim-reveal-rare {
+  animation: revealRareIllustratedCard 1.55s cubic-bezier(0.19, 1, 0.22, 1) forwards;
+}
+
+.card-3d-inner.anim-reveal-rare .card-front,
+.card-3d-inner.anim-reveal-rare .card-back {
+  box-shadow:
+    0 22px 55px rgba(0, 0, 0, 0.85),
+    0 0 50px rgba(255, 203, 5, 0.9),
+    0 0 90px rgba(236, 72, 153, 0.7);
+}
+
+@keyframes revealRareIllustratedCard {
+  0% {
+    transform: scale(1) rotateY(0deg) rotateZ(0deg);
+  }
+  12% {
+    transform: translate(-8px, -6px) scale(1.04) rotateY(0deg) rotateZ(-3.5deg);
+  }
+  24% {
+    transform: translate(8px, -12px) scale(1.08) rotateY(0deg) rotateZ(3.5deg);
+  }
+  38% {
+    transform: translate(0px, -24px) scale(1.15) rotateY(180deg) rotateZ(0deg);
+  }
+  68% {
+    transform: translateY(-30px) scale(1.18) rotateY(540deg) rotateZ(0deg);
+  }
+  86% {
+    transform: translateY(5px) scale(1.03) rotateY(540deg) rotateZ(0deg);
+  }
+  100% {
+    transform: translateY(0) scale(1) rotateY(540deg) rotateZ(0deg);
+  }
+}
+
+/* TIER 3: INCREDIBLE Final 11th Card Reveal (Umbreon & Sylveon Couple Card!) */
+.card-3d-inner.anim-reveal-love {
+  animation: revealMythicLoveCard 2.75s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.card-3d-inner.anim-reveal-love .card-front,
+.card-3d-inner.anim-reveal-love .card-back {
+  box-shadow:
+    0 25px 65px rgba(0, 0, 0, 0.9),
+    0 0 65px rgba(255, 77, 148, 0.95),
+    0 0 110px rgba(251, 191, 36, 0.85);
+}
+
+@keyframes revealMythicLoveCard {
+  0% {
+    transform: scale(1) rotateY(0deg) rotateZ(0deg);
+  }
+  10% {
+    transform: translate(-9px, -8px) scale(1.05) rotateY(0deg) rotateZ(-4deg);
+  }
+  20% {
+    transform: translate(9px, -16px) scale(1.1) rotateY(0deg) rotateZ(4deg);
+  }
+  34% {
+    transform: translate(0px, -42px) scale(1.22) rotateY(180deg) rotateZ(0deg);
+  }
+  60% {
+    transform: translate(0px, -46px) scale(1.25) rotateY(900deg) rotateZ(0deg);
+  }
+  82% {
+    transform: translate(0px, 7px) scale(1.05) rotateY(900deg) rotateZ(0deg);
+  }
+  100% {
+    transform: translate(0px, 0px) scale(1.02) rotateY(900deg) rotateZ(0deg);
+  }
+}
+
+/* ==========================================================================
+   11TH CARD DESIGN — UMBREON & SYLVEON EX (TAG TEAM COUPLE FULL-ART CARD)
+   ========================================================================== */
+.couple-card-fullart {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 16px;
+  padding: 9px;
+  /* Borda Metalizada Dual: Ouro Lunar do Umbreon + Rosa Fada da Sylveon */
+  background: linear-gradient(
+    135deg,
+    #fbbf24 0%,
+    #1e293b 22%,
+    #ff4d94 50%,
+    #60a5fa 78%,
+    #fbbf24 100%
+  );
+  box-shadow:
+    inset 0 0 18px rgba(255, 255, 255, 0.85),
+    0 0 45px rgba(255, 77, 148, 0.85);
+  display: flex;
+}
+
+.couple-card-canvas {
+  position: relative;
+  flex: 1;
+  border-radius: 11px;
+  border: 2px solid rgba(255, 255, 255, 0.92);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 8px 9px;
+  /* Cenário Full-Art: Noite Estrelada de Luar (Umbreon) encontrando Aurora Rosa/Azul (Sylveon) */
+  background:
+    radial-gradient(circle at 22% 24%, rgba(251, 191, 36, 0.35) 0%, transparent 42%),
+    radial-gradient(circle at 78% 28%, rgba(255, 77, 148, 0.45) 0%, transparent 48%),
+    radial-gradient(circle at 50% 45%, rgba(96, 165, 250, 0.28) 0%, transparent 55%),
+    linear-gradient(165deg, #090d1f 0%, #1e1b4b 38%, #4c1d95 68%, #831843 100%);
+}
+
+/* Lua Crescente Dourada do Umbreon + Fitas Mágicas da Sylveon no Céu */
+.couple-sky-decor {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.umbreon-crescent-moon {
+  position: absolute;
+  top: 38px;
+  left: 24px;
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  box-shadow: -12px 6px 0 0 #fde047;
+  filter: drop-shadow(0 0 14px #fbbf24);
+  transform: rotate(-18deg);
+}
+
+.sylveon-ribbon-glow {
+  position: absolute;
+  top: 25px;
+  right: -20px;
+  width: 170px;
+  height: 90px;
+  border-radius: 50%;
+  border: 4px solid rgba(255, 133, 192, 0.55);
+  box-shadow: 0 0 20px rgba(96, 165, 250, 0.5);
+  transform: rotate(22deg);
+}
+
+/* Cabeçalho Oficial TAG TEAM (Umbreon & Sylveon ex) */
+.couple-card-header {
+  position: relative;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(90deg, rgba(15, 23, 42, 0.88), rgba(88, 28, 135, 0.85));
+  border: 1.5px solid #fbbf24;
+  border-radius: 8px;
+  padding: 4px 7px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+.tag-team-badge {
+  background: linear-gradient(90deg, #fbbf24, #ff4d94);
+  color: #090d1a;
+  font-size: 0.52rem;
+  font-weight: 900;
+  padding: 2px 5px;
+  border-radius: 4px;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+}
+
+.couple-card-title {
+  font-size: 0.84rem;
+  font-weight: 900;
+  color: #ffffff;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.8);
+  letter-spacing: -0.2px;
+}
+
+.couple-card-hp {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 0.78rem;
+  font-weight: 900;
+  color: #fde047;
+}
+
+.dual-type-orb {
+  width: 17px;
+  height: 17px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.58rem;
+  border: 1px solid #fff;
+}
+
+.dual-type-orb.orb-dark {
+  background: radial-gradient(circle, #334155, #0f172a);
+  box-shadow: 0 0 6px #fbbf24;
+}
+
+.dual-type-orb.orb-fairy {
+  background: radial-gradient(circle, #ff85c0, #db2777);
+  box-shadow: 0 0 6px #ff4d94;
+}
+
+/* Cena Central: Umbreon & Sylveon Juntos como Casal */
+.couple-art-stage {
+  position: relative;
+  z-index: 3;
+  height: 168px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  margin: 2px 0;
+}
+
+/* Halo Romântico atrás do casal */
+.couple-heart-aura {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 155px;
+  height: 155px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.65) 0%,
+    rgba(255, 77, 148, 0.45) 42%,
+    rgba(251, 191, 36, 0.3) 70%,
+    transparent 100%
+  );
+  filter: blur(4px);
+}
+
+.couple-floating-hearts {
+  position: absolute;
+  top: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  z-index: 6;
+  animation: heartFloat 1.6s ease-in-out infinite alternate;
+}
+
+.couple-main-heart {
+  font-size: 1.65rem;
+  filter: drop-shadow(0 0 10px #ff4d94);
+}
+
+.couple-mini-heart {
+  font-size: 0.95rem;
+  filter: drop-shadow(0 0 6px #fbbf24);
+}
+
+@keyframes heartFloat {
+  from { transform: translateX(-50%) translateY(2px) scale(0.95); }
+  to { transform: translateX(-50%) translateY(-6px) scale(1.12); }
+}
+
+.couple-pokemon-pair {
+  position: relative;
+  z-index: 5;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  width: 100%;
+}
+
+/* Umbreon à esquerda (virado para a Sylveon, inclinado com carinho) */
+.poke-couple-sprite {
+  width: 132px;
+  height: 132px;
+  object-fit: contain;
+  filter: drop-shadow(0 8px 14px rgba(0, 0, 0, 0.65));
+}
+
+.poke-couple-sprite.umbreon-sprite {
+  margin-right: -24px;
+  transform: scaleX(-1) rotate(-4deg);
+  animation: umbreonNuzzle 2.8s ease-in-out infinite alternate;
+}
+
+/* Sylveon à direita (inclinada junto ao Umbreon) */
+.poke-couple-sprite.sylveon-sprite {
+  margin-left: -24px;
+  transform: rotate(-4deg);
+  animation: sylveonNuzzle 2.8s ease-in-out infinite alternate;
+}
+
+@keyframes umbreonNuzzle {
+  from { transform: scaleX(-1) rotate(-5deg) translateY(2px); }
+  to { transform: scaleX(-1) rotate(-1deg) translateY(-4px) translateX(-3px); }
+}
+
+@keyframes sylveonNuzzle {
+  from { transform: rotate(-5deg) translateY(2px); }
+  to { transform: rotate(-1deg) translateY(-4px) translateX(-3px); }
+}
+
+/* Banner de Dedicatória do Casal */
+.couple-dedication-ribbon {
+  position: relative;
+  z-index: 6;
+  margin: -8px auto 2px;
+  background: linear-gradient(90deg, #fbbf24, #ff4d94, #60a5fa);
+  color: #ffffff;
+  font-size: 0.66rem;
+  font-weight: 900;
+  padding: 2px 12px;
+  border-radius: 99px;
+  border: 1.5px solid #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
+  letter-spacing: 0.5px;
+}
+
+/* Caixa de Habilidade & Ataque Especial do Pedido de Encontro */
+.couple-card-text-panel {
+  position: relative;
+  z-index: 4;
+  background: rgba(15, 23, 42, 0.86);
+  backdrop-filter: blur(6px);
+  border: 1.5px solid rgba(251, 191, 36, 0.85);
+  border-radius: 10px;
+  padding: 7px 9px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.couple-ability-line {
+  font-size: 0.65rem;
+  line-height: 1.28;
+  color: #fce7f3;
+}
+
+.couple-ability-tag {
+  display: inline-block;
+  background: linear-gradient(90deg, #ec4899, #8b5cf6);
+  color: #fff;
+  font-weight: 900;
+  font-size: 0.56rem;
+  padding: 1px 5px;
+  border-radius: 4px;
+  margin-right: 4px;
+  text-transform: uppercase;
+}
+
+.couple-invite-attack-box {
+  background: linear-gradient(135deg, rgba(255, 77, 148, 0.34), rgba(251, 191, 36, 0.25));
+  border: 1.5px solid #fbbf24;
+  border-radius: 8px;
+  padding: 6px 8px;
+  text-align: center;
+  box-shadow: 0 0 14px rgba(255, 77, 148, 0.35);
+}
+
+.couple-attack-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2px;
+}
+
+.couple-attack-name-tag {
+  font-size: 0.6rem;
+  font-weight: 900;
+  color: #93c5fd;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.couple-attack-dmg {
+  font-size: 0.78rem;
+  font-weight: 900;
+  color: #fde047;
+}
+
+.couple-question-headline {
+  font-size: 0.9rem;
+  font-weight: 900;
+  color: #fde047;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.9);
+  line-height: 1.2;
+}
+
+.couple-question-body {
+  font-size: 0.67rem;
+  color: #ffffff;
+  font-weight: 600;
+  line-height: 1.3;
+  margin-top: 3px;
+}
+
+.couple-card-footer {
+  position: relative;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.56rem;
+  font-weight: 800;
+  color: #fde047;
+  padding-top: 1px;
+}
+
+/* ==========================================================================
+   CARD INFO & CONTROLS BELOW ARENA
+   ========================================================================== */
+.card-caption-panel {
+  text-align: center;
+  margin-top: 0.25rem;
+  min-height: 56px;
+}
+
+.card-caption-name {
+  font-size: 1.3rem;
+  font-weight: 900;
+  color: #ffffff;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.6);
+}
+
+.card-caption-sub {
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: var(--poke-yellow);
+  margin-top: 2px;
+}
+
+.arena-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.85rem;
+  flex-wrap: wrap;
+  margin-top: 0.45rem;
+}
+
+.btn-poke-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.78rem 1.45rem;
+  font-size: 0.9rem;
+  font-weight: 800;
+  color: #ffffff;
+  background: rgba(30, 41, 59, 0.9);
+  border: 2px solid rgba(148, 163, 184, 0.5);
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-poke-secondary:hover {
+  border-color: var(--poke-yellow);
+  color: var(--poke-yellow);
+  transform: translateY(-2px);
+}
+
+/* ==========================================================================
+   ROMANTIC INVITE RESPONSE PANEL (SHOWS ONLY AFTER 11TH CARD IS REVEALED!)
+   ========================================================================== */
+.invite-response-panel {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.8rem;
+  margin-top: 0.85rem;
+  padding: 1.2rem 1.7rem;
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(88, 28, 135, 0.92));
+  border: 3px solid #fbbf24;
+  border-radius: 22px;
+  box-shadow:
+    0 18px 45px rgba(0, 0, 0, 0.78),
+    0 0 35px rgba(255, 77, 148, 0.65);
+  max-width: 560px;
+  width: 100%;
+  text-align: center;
+  animation: popInviteBox 0.65s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.invite-response-panel.visible {
+  display: flex;
+}
+
+@keyframes popInviteBox {
+  from { opacity: 0; transform: scale(0.82) translateY(20px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.invite-headline {
+  font-size: 1.32rem;
+  font-weight: 900;
+  color: #fde047;
+  text-shadow: 0 2px 10px rgba(255, 77, 148, 0.8);
+}
+
+.invite-subtext {
+  font-size: 0.94rem;
+  color: #f8fafc;
+  line-height: 1.5;
+}
+
+.invite-buttons-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-top: 0.2rem;
+}
+
+.btn-accept-love {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.88rem 2rem;
+  font-size: 1.04rem;
+  font-weight: 900;
+  color: #ffffff;
+  background: linear-gradient(90deg, #ff4d94, #f59e0b);
+  border: 3px solid #ffffff;
+  border-radius: 999px;
+  cursor: pointer;
+  box-shadow: 0 0 28px rgba(255, 77, 148, 0.85);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn-accept-love:hover {
+  transform: scale(1.07) translateY(-2px);
+  box-shadow: 0 0 40px rgba(251, 191, 36, 0.95);
+}
+
+.btn-dodge-no {
+  padding: 0.7rem 1.3rem;
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: #cbd5e1;
+  background: rgba(30, 41, 59, 0.85);
+  border: 2px solid rgba(148, 163, 184, 0.4);
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+/* ==========================================================================
+   REVEALED CARDS TRAY (NO SPOILERS FOR UNREVEALED CARDS!)
+   ========================================================================== */
+.revealed-tray-section {
+  width: 100%;
+  margin-top: 1.4rem;
+  background: rgba(15, 23, 42, 0.72);
+  border: 2px solid rgba(255, 203, 5, 0.3);
+  border-radius: 20px;
+  padding: 0.95rem 1.15rem;
+  backdrop-filter: blur(10px);
+}
+
+.tray-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.tray-title {
+  font-size: 0.9rem;
+  font-weight: 900;
+  color: var(--poke-yellow);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+
+.tray-legend {
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.tray-grid {
+  display: grid;
+  grid-template-columns: repeat(11, minmax(70px, 1fr));
+  gap: 0.55rem;
+}
+
+.tray-slot {
+  aspect-ratio: 2.5 / 3.5;
+  border-radius: 10px;
+  background: rgba(30, 41, 59, 0.75);
+  border: 2px solid rgba(148, 163, 184, 0.28);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.tray-slot:hover {
+  transform: translateY(-4px);
+}
+
+/* Mini Card Back para todas as cartas ainda não reveladas (100% discreto!) */
+.tray-unrevealed-back {
+  width: 100%;
+  height: 100%;
+  background: url('https://tcg.pokemon.com/assets/img/global/tcg-card-back-2x.jpg') center/cover no-repeat, #1b356e;
+  filter: brightness(0.68);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 6px;
+}
+
+.tray-slot-num {
+  font-size: 0.68rem;
+  font-weight: 900;
+  color: #ffffff;
+  background: rgba(15, 23, 42, 0.85);
+  padding: 1px 7px;
+  border-radius: 99px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+}
+
+.tray-slot.active-slot {
+  border-color: var(--poke-yellow);
+  box-shadow: 0 0 14px rgba(255, 203, 5, 0.55);
+}
+
+.tray-slot.revealed-rare-slot {
+  border-color: var(--poke-yellow);
+  box-shadow: 0 0 12px rgba(255, 203, 5, 0.45);
+}
+
+.tray-slot.revealed-love-slot {
+  border-color: #ff4d94;
+  box-shadow: 0 0 15px rgba(255, 77, 148, 0.7);
+}
+
+.tray-slot-thumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.tray-love-mini {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #1e1b4b, #ff4d94, #fbbf24);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: 900;
+  padding: 4px;
+  text-align: center;
+}
+
+/* ==========================================================================
+   CELEBRATION & CUSTOMIZATION MODALS
+   ========================================================================== */
+.poke-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(6, 9, 20, 0.85);
+  backdrop-filter: blur(8px);
+  z-index: 50;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.poke-modal-backdrop.open {
+  display: flex;
+  animation: fadeInStage 0.35s ease forwards;
+}
+
+.poke-modal-box {
+  background: linear-gradient(160deg, #1b356e 0%, #0f172a 60%, #2e1065 100%);
+  border: 4px solid var(--poke-yellow);
+  border-radius: 24px;
+  padding: 2rem;
+  max-width: 500px;
+  width: 100%;
+  text-align: center;
+  box-shadow:
+    0 25px 70px rgba(0, 0, 0, 0.85),
+    0 0 50px rgba(255, 203, 5, 0.4);
+  position: relative;
+}
+
+.modal-couple-art {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  margin-bottom: 0.8rem;
+}
+
+.modal-poke-img {
+  width: 95px;
+  height: 95px;
+  object-fit: contain;
+  filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.6));
+}
+
+.modal-heart-icon {
+  font-size: 2rem;
+  animation: badgePulse 0.9s ease-in-out infinite alternate;
+}
+
+.modal-title {
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: var(--poke-yellow);
+  margin-bottom: 0.6rem;
+}
+
+.modal-text {
+  font-size: 0.98rem;
+  color: #f1f5f9;
+  line-height: 1.55;
+  margin-bottom: 1.4rem;
+}
+
+.form-group {
+  text-align: left;
+  margin-bottom: 0.9rem;
+}
+
+.form-group label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: var(--poke-yellow);
+  margin-bottom: 0.3rem;
+}
+
+.form-input {
+  width: 100%;
+  padding: 0.7rem 0.9rem;
+  border-radius: 10px;
+  border: 2px solid rgba(255, 203, 5, 0.45);
+  background: rgba(15, 23, 42, 0.9);
+  color: #fff;
+  font-size: 0.9rem;
+  font-family: inherit;
+}
+
+/* ==========================================================================
+   RESPONSIVE DESIGN
+   ========================================================================== */
+@media (max-width: 960px) {
+  .tray-grid {
+    grid-template-columns: repeat(6, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  :root {
+    --card-width: 285px;
+    --card-height: 400px;
+  }
+  .poke-header {
+    padding: 0.65rem 1rem;
+  }
+  .poke-title {
+    font-size: 1.2rem;
+  }
+  .pack-badge-pill {
+    display: none;
+  }
+  .giant-booster-pack {
+    width: 290px;
+    height: 445px;
+  }
+  .pack-foil-body {
+    height: 375px;
+  }
+  .pack-art-circle {
+    width: 175px;
+    height: 175px;
+  }
+  .pack-mascot-img {
+    width: 170px;
+    height: 170px;
+  }
+  .tray-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
