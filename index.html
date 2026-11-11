@@ -73,7 +73,6 @@ html, body {
     radial-gradient(circle at 85% 80%, rgba(255, 203, 5, 0.2) 0%, transparent 50%),
     linear-gradient(180deg, #0b132b 0%, #090d1a 55%, #120924 100%);
   overflow: hidden;
-  transition: background 0.9s ease;
 }
 
 body.mode-rare-revealed .poke-bg-stadium {
@@ -1030,103 +1029,94 @@ body.mode-love-revealed .poke-bg-stadium {
   z-index: 2;
 }
 
-/* God Rays behind Rare & Final Card (Only activate on reveal!) */
+/* God Rays behind Rare & Final Card (GPU-optimized, only activate on reveal!) */
 .arena-god-rays {
   position: absolute;
-  width: 640px;
-  height: 640px;
+  width: 390px;
+  height: 390px;
   border-radius: 50%;
-  background: repeating-conic-gradient(
-    from 0deg,
-    rgba(255, 203, 5, 0.3) 0deg 12deg,
-    transparent 12deg 24deg
-  );
-  mask-image: radial-gradient(circle, black 10%, transparent 68%);
-  -webkit-mask-image: radial-gradient(circle, black 10%, transparent 68%);
+  background:
+    radial-gradient(circle, rgba(255, 203, 5, 0.42) 0%, rgba(168, 85, 247, 0.22) 45%, transparent 70%);
   opacity: 0;
   pointer-events: none;
   z-index: 1;
-  transition: opacity 0.45s ease;
+  will-change: transform, opacity;
+  transition: opacity 0.35s ease;
 }
 
 .arena-god-rays.active-rare {
   opacity: 1;
-  animation: spinRays 14s linear infinite;
+  animation: pulseAuraRare 2.4s ease-in-out infinite alternate;
 }
 
 .arena-god-rays.active-love {
   opacity: 1;
-  width: 780px;
-  height: 780px;
-  background: repeating-conic-gradient(
-    from 0deg,
-    rgba(255, 77, 148, 0.38) 0deg 10deg,
-    rgba(251, 191, 36, 0.34) 10deg 20deg,
-    transparent 20deg 30deg
-  );
-  animation: spinRays 9s linear infinite;
+  width: 430px;
+  height: 430px;
+  background:
+    radial-gradient(circle, rgba(255, 77, 148, 0.5) 0%, rgba(251, 191, 36, 0.32) 45%, transparent 72%);
+  animation: pulseAuraRare 2s ease-in-out infinite alternate;
 }
 
-@keyframes spinRays {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+@keyframes pulseAuraRare {
+  from { transform: scale(0.94); opacity: 0.82; }
+  to { transform: scale(1.08); opacity: 1; }
 }
 
 .love-magic-circle {
   position: absolute;
-  width: 480px;
-  height: 480px;
+  width: 360px;
+  height: 360px;
   border-radius: 50%;
-  border: 3px dashed rgba(255, 77, 148, 0.75);
-  box-shadow:
-    0 0 55px rgba(255, 77, 148, 0.55),
-    inset 0 0 40px rgba(251, 191, 36, 0.35);
+  border: 2.5px dashed rgba(255, 77, 148, 0.7);
   opacity: 0;
   pointer-events: none;
   z-index: 2;
-  transition: opacity 0.5s ease;
+  will-change: transform, opacity;
+  transition: opacity 0.4s ease;
 }
 
 .love-magic-circle.active {
   opacity: 1;
-  animation: magicCircleSpin 12s linear infinite;
+  animation: magicCircleSpin 16s linear infinite;
 }
 
 @keyframes magicCircleSpin {
-  0% { transform: rotate(0deg) scale(0.96); }
-  50% { transform: rotate(180deg) scale(1.04); }
-  100% { transform: rotate(360deg) scale(0.96); }
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
+/* Shockwave Ring 100% GPU (usa apenas transform: scale e opacity, zero reflow!) */
 .shockwave-ring {
   position: absolute;
-  width: 60px;
-  height: 60px;
+  width: 300px;
+  height: 300px;
   border-radius: 50%;
-  border: 6px solid #ffcb05;
+  border: 4px solid #ffcb05;
   opacity: 0;
+  transform: scale(0.2);
   pointer-events: none;
+  will-change: transform, opacity;
   z-index: 15;
 }
 
 .shockwave-ring.boom-rare {
-  animation: shockwaveExpand 0.85s ease-out forwards;
+  animation: shockwaveExpand 0.65s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .shockwave-ring.boom-love {
   border-color: #ff4d94;
-  box-shadow: 0 0 45px #fbbf24;
-  animation: shockwaveExpandLove 1.3s ease-out forwards;
+  animation: shockwaveExpandLove 0.85s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 @keyframes shockwaveExpand {
-  0% { width: 40px; height: 40px; opacity: 1; border-width: 10px; }
-  100% { width: 680px; height: 680px; opacity: 0; border-width: 1px; }
+  0% { transform: scale(0.25); opacity: 0.95; }
+  100% { transform: scale(1.65); opacity: 0; }
 }
 
 @keyframes shockwaveExpandLove {
-  0% { width: 40px; height: 40px; opacity: 1; border-width: 16px; }
-  100% { width: 950px; height: 950px; opacity: 0; border-width: 1px; }
+  0% { transform: scale(0.25); opacity: 1; }
+  100% { transform: scale(1.9); opacity: 0; }
 }
 
 /* ==========================================================================
@@ -1137,7 +1127,7 @@ body.mode-love-revealed .poke-bg-stadium {
   width: var(--card-width);
   height: var(--card-height);
   z-index: 5;
-  perspective: 1400px;
+  perspective: 1200px;
   cursor: pointer;
   transition: transform 0.15s ease-out;
 }
@@ -1147,7 +1137,9 @@ body.mode-love-revealed .poke-bg-stadium {
   width: 100%;
   height: 100%;
   transform-style: preserve-3d;
-  transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  -webkit-transform-style: preserve-3d;
+  will-change: transform;
+  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .card-face {
@@ -1279,24 +1271,23 @@ body.mode-love-revealed .poke-bg-stadium {
   border-radius: 16px;
 }
 
-/* Holographic Foil Overlay for Revealed Cards */
+/* Holographic Foil Overlay for Revealed Cards (GPU-friendly without heavy blend-mode stalls) */
 .card-holo-overlay {
   position: absolute;
   inset: 0;
   border-radius: 16px;
   pointer-events: none;
   z-index: 6;
-  mix-blend-mode: color-dodge;
   opacity: 0;
-  transition: opacity 0.3s ease;
+  transition: opacity 0.25s ease;
   background:
-    radial-gradient(
-      circle at var(--pointer-x, 50%) var(--pointer-y, 50%),
-      rgba(255, 255, 255, 0.65) 0%,
-      rgba(255, 203, 5, 0.35) 25%,
-      rgba(236, 72, 153, 0.3) 50%,
-      rgba(59, 130, 246, 0.25) 75%,
-      transparent 100%
+    linear-gradient(
+      125deg,
+      transparent 20%,
+      rgba(255, 255, 255, 0.22) 42%,
+      rgba(255, 203, 5, 0.18) 50%,
+      rgba(236, 72, 153, 0.16) 58%,
+      transparent 80%
     );
 }
 
@@ -1314,126 +1305,99 @@ body.mode-love-revealed .poke-bg-stadium {
     radial-gradient(2px 2px at 82% 75%, #ff85c0, transparent),
     radial-gradient(2.5px 2.5px at 18% 82%, #60a5fa, transparent),
     radial-gradient(3px 3px at 60% 45%, #fff, transparent);
-  mix-blend-mode: screen;
 }
 
 .card-3d-wrapper.is-rare .card-front {
   border: 2.5px solid var(--poke-yellow);
   box-shadow:
-    0 20px 55px rgba(0, 0, 0, 0.85),
-    0 0 38px rgba(255, 203, 5, 0.7);
+    0 14px 32px rgba(0, 0, 0, 0.75),
+    0 0 22px rgba(255, 203, 5, 0.55);
 }
 
 .card-3d-wrapper.is-rare .card-holo-overlay,
 .card-3d-wrapper.is-love .card-holo-overlay {
-  opacity: 0.72;
+  opacity: 0.65;
 }
 
 .card-3d-wrapper.is-rare .card-sparkles-overlay,
 .card-3d-wrapper.is-love .card-sparkles-overlay {
-  opacity: 0.92;
-  animation: twinkleSparkles 2s ease-in-out infinite alternate;
-}
-
-@keyframes twinkleSparkles {
-  0% { opacity: 0.45; transform: scale(0.98); }
-  100% { opacity: 1; transform: scale(1.02); }
+  opacity: 0.85;
 }
 
 /* ==========================================================================
-   THREE TIERS OF REVEAL KEYFRAME ANIMATIONS
+   THREE TIERS OF REVEAL KEYFRAME ANIMATIONS (60FPS MOBILE HARDWARE ACCELERATED)
    IMPORTANTE: Não usar `filter` em `.card-3d-inner`, pois no CSS 3D qualquer
    `filter` achata o `transform-style: preserve-3d` e esconde `.card-front`!
    ========================================================================== */
 
 /* TIER 1: Normal Card Reveal (Cards 1 to 6) */
 .card-3d-inner.anim-reveal-normal {
-  animation: revealNormalCard 0.72s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation: revealNormalCard 0.58s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
 @keyframes revealNormalCard {
   0% {
-    transform: translateY(0) scale(1) rotateY(0deg);
+    transform: translate3d(0, 0, 0) scale(1) rotateY(0deg);
   }
-  42% {
-    transform: translateY(-28px) scale(1.07) rotateY(90deg);
+  45% {
+    transform: translate3d(0, -18px, 0) scale(1.04) rotateY(90deg);
   }
   100% {
-    transform: translateY(0) scale(1) rotateY(180deg);
+    transform: translate3d(0, 0, 0) scale(1) rotateY(180deg);
   }
 }
 
-/* TIER 2: Detailed Rare Illustrated Card Reveal (Cards 7, 8, 9, 10) */
+/* TIER 2: Detailed Rare Illustrated Card Reveal (Cards 7, 8, 9, 10) — Fluida a 60fps no celular! */
 .card-3d-inner.anim-reveal-rare {
-  animation: revealRareIllustratedCard 1.55s cubic-bezier(0.19, 1, 0.22, 1) forwards;
+  animation: revealRareIllustratedCard 0.95s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
 .card-3d-inner.anim-reveal-rare .card-front,
 .card-3d-inner.anim-reveal-rare .card-back {
   box-shadow:
-    0 22px 55px rgba(0, 0, 0, 0.85),
-    0 0 50px rgba(255, 203, 5, 0.9),
-    0 0 90px rgba(236, 72, 153, 0.7);
+    0 16px 36px rgba(0, 0, 0, 0.8),
+    0 0 26px rgba(255, 203, 5, 0.75);
 }
 
 @keyframes revealRareIllustratedCard {
   0% {
-    transform: scale(1) rotateY(0deg) rotateZ(0deg);
+    transform: translate3d(0, 0, 0) scale(1) rotateY(0deg);
   }
-  12% {
-    transform: translate(-8px, -6px) scale(1.04) rotateY(0deg) rotateZ(-3.5deg);
+  20% {
+    transform: translate3d(0, -12px, 0) scale(1.05) rotateY(-12deg);
   }
-  24% {
-    transform: translate(8px, -12px) scale(1.08) rotateY(0deg) rotateZ(3.5deg);
-  }
-  38% {
-    transform: translate(0px, -24px) scale(1.15) rotateY(180deg) rotateZ(0deg);
-  }
-  68% {
-    transform: translateY(-30px) scale(1.18) rotateY(540deg) rotateZ(0deg);
-  }
-  86% {
-    transform: translateY(5px) scale(1.03) rotateY(540deg) rotateZ(0deg);
+  62% {
+    transform: translate3d(0, -20px, 0) scale(1.09) rotateY(190deg);
   }
   100% {
-    transform: translateY(0) scale(1) rotateY(540deg) rotateZ(0deg);
+    transform: translate3d(0, 0, 0) scale(1) rotateY(180deg);
   }
 }
 
-/* TIER 3: INCREDIBLE Final 11th Card Reveal (Umbreon & Sylveon Couple Card!) */
+/* TIER 3: INCREDIBLE Final 11th Card Reveal (Umbreon & Sylveon Couple Card!) — Fluida a 60fps no celular! */
 .card-3d-inner.anim-reveal-love {
-  animation: revealMythicLoveCard 2.75s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: revealMythicLoveCard 1.35s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
 .card-3d-inner.anim-reveal-love .card-front,
 .card-3d-inner.anim-reveal-love .card-back {
   box-shadow:
-    0 25px 65px rgba(0, 0, 0, 0.9),
-    0 0 65px rgba(255, 77, 148, 0.95),
-    0 0 110px rgba(251, 191, 36, 0.85);
+    0 18px 40px rgba(0, 0, 0, 0.85),
+    0 0 32px rgba(255, 77, 148, 0.8);
 }
 
 @keyframes revealMythicLoveCard {
   0% {
-    transform: scale(1) rotateY(0deg) rotateZ(0deg);
+    transform: translate3d(0, 0, 0) scale(1) rotateY(0deg);
   }
-  10% {
-    transform: translate(-9px, -8px) scale(1.05) rotateY(0deg) rotateZ(-4deg);
+  18% {
+    transform: translate3d(0, -14px, 0) scale(1.06) rotateY(-15deg);
   }
-  20% {
-    transform: translate(9px, -16px) scale(1.1) rotateY(0deg) rotateZ(4deg);
-  }
-  34% {
-    transform: translate(0px, -42px) scale(1.22) rotateY(180deg) rotateZ(0deg);
-  }
-  60% {
-    transform: translate(0px, -46px) scale(1.25) rotateY(900deg) rotateZ(0deg);
-  }
-  82% {
-    transform: translate(0px, 7px) scale(1.05) rotateY(900deg) rotateZ(0deg);
+  70% {
+    transform: translate3d(0, -24px, 0) scale(1.12) rotateY(548deg);
   }
   100% {
-    transform: translate(0px, 0px) scale(1.02) rotateY(900deg) rotateZ(0deg);
+    transform: translate3d(0, 0, 0) scale(1.02) rotateY(540deg);
   }
 }
 
@@ -1692,8 +1656,7 @@ body.mode-love-revealed .poke-bg-stadium {
 .couple-card-text-panel {
   position: relative;
   z-index: 4;
-  background: rgba(15, 23, 42, 0.86);
-  backdrop-filter: blur(6px);
+  background: rgba(15, 23, 42, 0.92);
   border: 1.5px solid rgba(251, 191, 36, 0.85);
   border-radius: 10px;
   padding: 7px 9px;
@@ -1924,11 +1887,10 @@ body.mode-love-revealed .poke-bg-stadium {
 .revealed-tray-section {
   width: 100%;
   margin-top: 1.4rem;
-  background: rgba(15, 23, 42, 0.72);
+  background: rgba(15, 23, 42, 0.88);
   border: 2px solid rgba(255, 203, 5, 0.3);
   border-radius: 20px;
   padding: 0.95rem 1.15rem;
-  backdrop-filter: blur(10px);
 }
 
 .tray-header {
@@ -2135,6 +2097,21 @@ body.mode-love-revealed .poke-bg-stadium {
 @media (max-width: 960px) {
   .tray-grid {
     grid-template-columns: repeat(6, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .giant-bg-pokeball,
+  .orig-back-vortex {
+    animation: none !important;
+  }
+  .pack-aura-ring {
+    filter: blur(12px);
+    animation: none;
+  }
+  .deck-stack-shadow {
+    filter: none;
+    opacity: 0.6;
   }
 }
 
@@ -2696,11 +2673,16 @@ body.mode-love-revealed .poke-bg-stadium {
   }
 
   // =========================================================================
-  // SISTEMA DE PARTÍCULAS EM CANVAS (ESTRELAS, BRILHOS E CORAÇÕES)
+  // SISTEMA DE PARTÍCULAS EM CANVAS (OTIMIZADO 60FPS PARA MOBILE E DESKTOP)
   // =========================================================================
   const canvas = document.getElementById('fxCanvas');
   const ctx = canvas ? canvas.getContext('2d') : null;
   let particles = [];
+  let isParticleLoopRunning = false;
+
+  function isMobileDevice() {
+    return window.innerWidth <= 768;
+  }
 
   function resizeCanvas() {
     if (!canvas) return;
@@ -2711,21 +2693,30 @@ body.mode-love-revealed .poke-bg-stadium {
   resizeCanvas();
 
   function spawnParticles(options) {
-    if (!canvas) return;
+    if (!canvas || !ctx) return;
+    const mobile = isMobileDevice();
+    const maxAllowed = mobile ? 34 : 85;
+
     const {
       x = window.innerWidth / 2,
       y = window.innerHeight / 2,
-      count = 35,
+      count = 28,
       colors = ['#ffcb05', '#ffffff', '#38bdf8'],
       shapes = ['circle', 'star'],
       speedMin = 2,
-      speedMax = 9,
+      speedMax = 8,
       sizeMin = 4,
-      sizeMax = 11,
+      sizeMax = 10,
       gravity = 0.08
     } = options;
 
-    for (let i = 0; i < count; i++) {
+    // Reduz a quantidade de partículas no celular para manter 60 FPS cravados
+    const actualCount = mobile ? Math.max(8, Math.round(count * 0.35)) : Math.round(count * 0.75);
+
+    for (let i = 0; i < actualCount; i++) {
+      if (particles.length >= maxAllowed) {
+        particles.shift();
+      }
       const angle = Math.random() * Math.PI * 2;
       const speed = speedMin + Math.random() * (speedMax - speedMin);
       particles.push({
@@ -2737,11 +2728,16 @@ body.mode-love-revealed .poke-bg-stadium {
         color: colors[Math.floor(Math.random() * colors.length)],
         shape: shapes[Math.floor(Math.random() * shapes.length)],
         alpha: 1,
-        decay: 0.01 + Math.random() * 0.014,
+        decay: mobile ? 0.022 + Math.random() * 0.015 : 0.014 + Math.random() * 0.014,
         gravity,
         rotation: Math.random() * Math.PI * 2,
-        vRot: (Math.random() - 0.5) * 0.15
+        vRot: (Math.random() - 0.5) * 0.14
       });
+    }
+
+    if (!isParticleLoopRunning) {
+      isParticleLoopRunning = true;
+      requestAnimationFrame(animateParticles);
     }
   }
 
@@ -2780,44 +2776,50 @@ body.mode-love-revealed .poke-bg-stadium {
   }
 
   function animateParticles() {
-    if (ctx && canvas) {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      for (let i = particles.length - 1; i >= 0; i--) {
-        const p = particles[i];
-        p.x += p.vx;
-        p.y += p.vy;
-        p.vy += p.gravity;
-        p.rotation += p.vRot;
-        p.alpha -= p.decay;
-
-        if (p.alpha <= 0) {
-          particles.splice(i, 1);
-          continue;
-        }
-
-        ctx.save();
-        ctx.globalAlpha = Math.max(0, p.alpha);
-        ctx.translate(p.x, p.y);
-        ctx.rotate(p.rotation);
-        ctx.fillStyle = p.color;
-        ctx.shadowColor = p.color;
-        ctx.shadowBlur = 10;
-
-        if (p.shape === 'heart') {
-          drawHeart(ctx, p.size * 1.3);
-        } else if (p.shape === 'star') {
-          drawStar(ctx, 4, p.size, p.size * 0.42);
-        } else {
-          ctx.beginPath();
-          ctx.arc(0, 0, p.size * 0.55, 0, Math.PI * 2);
-          ctx.fill();
-        }
-        ctx.restore();
-      }
+    if (!ctx || !canvas) {
+      isParticleLoopRunning = false;
+      return;
     }
-    requestAnimationFrame(animateParticles);
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    for (let i = particles.length - 1; i >= 0; i--) {
+      const p = particles[i];
+      p.x += p.vx;
+      p.y += p.vy;
+      p.vy += p.gravity;
+      p.rotation += p.vRot;
+      p.alpha -= p.decay;
+
+      if (p.alpha <= 0) {
+        particles.splice(i, 1);
+        continue;
+      }
+
+      ctx.save();
+      ctx.globalAlpha = Math.max(0, p.alpha);
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rotation);
+      ctx.fillStyle = p.color;
+
+      if (p.shape === 'heart') {
+        drawHeart(ctx, p.size * 1.25);
+      } else if (p.shape === 'star') {
+        drawStar(ctx, 4, p.size, p.size * 0.42);
+      } else {
+        ctx.beginPath();
+        ctx.arc(0, 0, p.size * 0.55, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.restore();
+    }
+
+    if (particles.length > 0) {
+      requestAnimationFrame(animateParticles);
+    } else {
+      isParticleLoopRunning = false;
+    }
   }
-  animateParticles();
 
   // =========================================================================
   // ELEMENTOS DO DOM
@@ -2872,37 +2874,51 @@ body.mode-love-revealed .poke-bg-stadium {
   const btnCloseCelebration = document.getElementById('btnCloseCelebration');
 
   // =========================================================================
-  // PRELOAD DAS IMAGENS OFICIAIS (VERSO + 10 PRIMEIRAS CARTAS + UMBREON & SYLVEON)
+  // PRELOAD OTIMIZADO (Usa imagens leves no celular para não estourar memória GPU)
   // =========================================================================
+  function getOptimalCardImgUrl(card) {
+    if (!card || !card.imageUrl) return '';
+    if (isMobileDevice()) {
+      return card.imageUrl.replace('_hires.png', '.png');
+    }
+    return card.imageUrl;
+  }
+
+  function getThumbCardImgUrl(card) {
+    if (!card || !card.imageUrl) return '';
+    return card.imageUrl.replace('_hires.png', '.png');
+  }
+
   function preloadCardImages() {
-    const preloadList = [
-      'https://archives.bulbagarden.net/media/upload/2/24/151_Booster.png',
-      'https://tcg.pokemon.com/assets/img/global/tcg-card-back-2x.jpg',
-      'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/197.png',
-      'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/700.png'
-    ];
-    PACK_CARDS.forEach((card) => {
-      if (card.imageUrl) preloadList.push(card.imageUrl);
-      if (card.backupUrl) preloadList.push(card.backupUrl);
-    });
-    preloadList.forEach((url) => {
-      const img = new Image();
-      img.referrerPolicy = 'no-referrer';
-      img.src = url;
-    });
+    try {
+      const preloadList = [
+        'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/197.png',
+        'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/700.png'
+      ];
+      PACK_CARDS.forEach((card) => {
+        if (card.imageUrl) {
+          preloadList.push(getOptimalCardImgUrl(card));
+        }
+      });
+      preloadList.forEach((url) => {
+        const img = new Image();
+        img.decoding = 'async';
+        img.src = url;
+      });
+    } catch (e) {}
   }
   preloadCardImages();
 
   // =========================================================================
-  // INTERAÇÃO 3D NO BOOSTER PACK E NA CARTA ATIVA
+  // INTERAÇÃO 3D NO BOOSTER PACK E NA CARTA ATIVA (APENAS DESKTOP COM MOUSE)
   // =========================================================================
-  if (boosterPack) {
+  if (boosterPack && !isMobileDevice()) {
     boosterPack.addEventListener('mousemove', (e) => {
       if (isOpeningPack) return;
       const rect = boosterPack.getBoundingClientRect();
       const x = (e.clientX - rect.left) / rect.width - 0.5;
       const y = (e.clientY - rect.top) / rect.height - 0.5;
-      boosterPack.style.transform = `rotateY(${x * 22}deg) rotateX(${-y * 22}deg) scale(1.03)`;
+      boosterPack.style.transform = `rotateY(${x * 18}deg) rotateX(${-y * 18}deg) scale(1.02)`;
     });
     boosterPack.addEventListener('mouseleave', () => {
       if (isOpeningPack) return;
@@ -2910,16 +2926,12 @@ body.mode-love-revealed .poke-bg-stadium {
     });
   }
 
-  if (card3dWrapper) {
+  if (card3dWrapper && !isMobileDevice()) {
     card3dWrapper.addEventListener('mousemove', (e) => {
+      if (isAnimatingCard) return;
       const rect = card3dWrapper.getBoundingClientRect();
-      const relX = ((e.clientX - rect.left) / rect.width) * 100;
-      const relY = ((e.clientY - rect.top) / rect.height) * 100;
-      card3dWrapper.style.setProperty('--pointer-x', `${relX}%`);
-      card3dWrapper.style.setProperty('--pointer-y', `${relY}%`);
-
-      const tiltX = ((e.clientX - rect.left) / rect.width - 0.5) * 18;
-      const tiltY = ((e.clientY - rect.top) / rect.height - 0.5) * -18;
+      const tiltX = ((e.clientX - rect.left) / rect.width - 0.5) * 14;
+      const tiltY = ((e.clientY - rect.top) / rect.height - 0.5) * -14;
       card3dWrapper.style.transform = `rotateY(${tiltX}deg) rotateX(${tiltY}deg)`;
     });
 
@@ -3026,35 +3038,85 @@ body.mode-love-revealed .poke-bg-stadium {
       return;
     }
 
-    const backupSrc = card.backupUrl || card.imageUrl.replace('_hires.png', '.png');
+    const primarySrc = getOptimalCardImgUrl(card);
+    const stdFallback = card.imageUrl.replace('_hires.png', '.png');
+    const backupSrc = card.backupUrl ? card.backupUrl.replace('_hires.png', '.png') : stdFallback;
     cardFrontContent.innerHTML = `
       <img class="real-pokemon-card-img"
-           src="${card.imageUrl}"
+           src="${primarySrc}"
+           decoding="async"
            alt="${escapeHtml(card.name)}"
-           onerror="if(!this.dataset.triedBackup){this.dataset.triedBackup='1';this.src='${backupSrc}';}else{this.onerror=null;this.src='${card.fallbackSprite}';this.style.objectFit='contain';this.style.padding='24px';this.style.background='radial-gradient(circle, #1e293b, #0f172a)';}" />
+           onerror="if(!this.dataset.triedStd && this.src!=='${stdFallback}'){this.dataset.triedStd='1';this.src='${stdFallback}';}else if(!this.dataset.triedBackup){this.dataset.triedBackup='1';this.src='${backupSrc}';}else{this.onerror=null;this.src='${card.fallbackSprite}';this.style.objectFit='contain';this.style.padding='24px';this.style.background='radial-gradient(circle, #1e293b, #0f172a)';}" />
       <div class="card-holo-overlay"></div>
       <div class="card-sparkles-overlay"></div>
     `;
   }
 
   // =========================================================================
-  // BARRA DE PROGRESSO E BANDEJA DE 11 CARTAS (100% DISCRETA ANTES DE REVELAR!)
+  // BARRA DE PROGRESSO E BANDEJA DE 11 CARTAS (DOM REUTILIZADO SEM RE-CRIAR IMAGENS!)
   // =========================================================================
+  let pipElements = [];
+  let traySlotElements = [];
+  let traySlotRenderedState = new Array(11).fill(false);
+
+  function ensureTrayAndPipsBuilt() {
+    if (pipElements.length === PACK_CARDS.length) return;
+
+    progressPipsContainer.innerHTML = '';
+    trayGrid.innerHTML = '';
+    pipElements = [];
+    traySlotElements = [];
+    traySlotRenderedState = new Array(11).fill(false);
+
+    PACK_CARDS.forEach((card, idx) => {
+      const pip = document.createElement('div');
+      pip.className = 'step-pip';
+      pip.textContent = String(card.slot);
+      pip.title = `Carta #${card.slot}`;
+      pip.addEventListener('click', () => {
+        if (isAnimatingCard) return;
+        const firstUnrevealed = revealedStates.indexOf(false);
+        if (revealedStates[idx] || idx === firstUnrevealed) {
+          loadCardSlot(idx);
+        }
+      });
+      progressPipsContainer.appendChild(pip);
+      pipElements.push(pip);
+
+      const slotEl = document.createElement('div');
+      slotEl.className = 'tray-slot';
+      slotEl.innerHTML = `
+        <div class="tray-unrevealed-back">
+          <span class="tray-slot-num">#${card.slot}</span>
+        </div>
+      `;
+      slotEl.addEventListener('click', () => {
+        if (isAnimatingCard) return;
+        const firstUnrevealed = revealedStates.indexOf(false);
+        if (revealedStates[idx] || idx === firstUnrevealed) {
+          loadCardSlot(idx);
+        }
+      });
+      trayGrid.appendChild(slotEl);
+      traySlotElements.push(slotEl);
+    });
+  }
+
   function renderProgressAndTray() {
+    ensureTrayAndPipsBuilt();
+
     const totalRevealed = revealedStates.filter(Boolean).length;
     if (revealedCountText) {
       revealedCountText.textContent = String(totalRevealed);
     }
 
-    // 1. Pips de 1 a 11 (Sem spoilers para cartas ainda fechadas!)
-    progressPipsContainer.innerHTML = '';
     PACK_CARDS.forEach((card, idx) => {
-      const pip = document.createElement('div');
-      pip.className = 'step-pip';
+      const pip = pipElements[idx];
+      const slotEl = traySlotElements[idx];
 
-      if (idx === currentCardIndex) {
-        pip.classList.add('active');
-      }
+      // Atualizar classes do pip sem recriar DOM
+      pip.className = 'step-pip';
+      if (idx === currentCardIndex) pip.classList.add('active');
 
       if (revealedStates[idx]) {
         if (card.tier === 'rare') {
@@ -3069,25 +3131,11 @@ body.mode-love-revealed .poke-bg-stadium {
         }
         pip.title = `Carta ${card.slot}: ${card.name}`;
       } else {
-        // Ainda não revelada: parece idêntica a qualquer outra carta!
         pip.textContent = String(card.slot);
         pip.title = `Carta #${card.slot}`;
       }
 
-      pip.addEventListener('click', () => {
-        if (isAnimatingCard) return;
-        const firstUnrevealed = revealedStates.indexOf(false);
-        if (revealedStates[idx] || idx === firstUnrevealed) {
-          loadCardSlot(idx);
-        }
-      });
-      progressPipsContainer.appendChild(pip);
-    });
-
-    // 2. Bandeja inferior das 11 cartas (Mostra o verso original enquanto não for revelada!)
-    trayGrid.innerHTML = '';
-    PACK_CARDS.forEach((card, idx) => {
-      const slotEl = document.createElement('div');
+      // Atualizar slot da bandeja (só injeta a imagem na primeira vez que a carta é revelada!)
       slotEl.className = 'tray-slot';
       if (idx === currentCardIndex) slotEl.classList.add('active-slot');
 
@@ -3095,36 +3143,30 @@ body.mode-love-revealed .poke-bg-stadium {
         if (card.tier === 'rare') slotEl.classList.add('revealed-rare-slot');
         if (card.tier === 'love') slotEl.classList.add('revealed-love-slot');
 
-        if (card.tier === 'love') {
-          slotEl.innerHTML = `
-            <div class="tray-love-mini">
-              <span style="font-size:1.15rem;">🌙💖</span>
-              <span style="font-size:0.54rem; margin-top:2px;">UMBREON &amp; SYLVEON</span>
-            </div>
-          `;
-        } else {
-          slotEl.innerHTML = `
-            <img class="tray-slot-thumb" src="${card.imageUrl}" alt="${escapeHtml(card.name)}">
-          `;
+        if (!traySlotRenderedState[idx]) {
+          traySlotRenderedState[idx] = true;
+          if (card.tier === 'love') {
+            slotEl.innerHTML = `
+              <div class="tray-love-mini">
+                <span style="font-size:1.15rem;">🌙💖</span>
+                <span style="font-size:0.54rem; margin-top:2px;">UMBREON &amp; SYLVEON</span>
+              </div>
+            `;
+          } else {
+            const thumbUrl = getThumbCardImgUrl(card);
+            slotEl.innerHTML = `
+              <img class="tray-slot-thumb" src="${thumbUrl}" loading="lazy" decoding="async" alt="${escapeHtml(card.name)}">
+            `;
+          }
         }
-      } else {
-        // Verso original discreto para todas as cartas fechadas
+      } else if (traySlotRenderedState[idx]) {
+        traySlotRenderedState[idx] = false;
         slotEl.innerHTML = `
           <div class="tray-unrevealed-back">
             <span class="tray-slot-num">#${card.slot}</span>
           </div>
         `;
       }
-
-      slotEl.addEventListener('click', () => {
-        if (isAnimatingCard) return;
-        const firstUnrevealed = revealedStates.indexOf(false);
-        if (revealedStates[idx] || idx === firstUnrevealed) {
-          loadCardSlot(idx);
-        }
-      });
-
-      trayGrid.appendChild(slotEl);
     });
   }
 
@@ -3262,13 +3304,13 @@ body.mode-love-revealed .poke-bg-stadium {
         spawnParticles({
           x: centerX,
           y: centerY,
-          count: 26,
+          count: 18,
           colors: [card.color, '#ffffff', '#ffcb05'],
           shapes: ['circle', 'star'],
           speedMin: 2,
-          speedMax: 8
+          speedMax: 7
         });
-      }, 240);
+      }, 200);
 
       setTimeout(() => {
         card3dInner.classList.remove('anim-reveal-normal');
@@ -3278,51 +3320,39 @@ body.mode-love-revealed .poke-bg-stadium {
         applyRevealedAtmosphere(card);
         updateCaptionAndButtons(true);
         renderProgressAndTray();
-      }, 730);
+      }, 590);
 
     } else if (card.tier === 'rare') {
       // ---------------------------------------------------------------------
-      // NÍVEL 2: CARTA RARA ILUSTRATIVA (7, 8, 9 E 10) — SURPRESA AO VIRAR!
+      // NÍVEL 2: CARTA RARA ILUSTRATIVA (7, 8, 9 E 10) — FLUIDA A 60FPS!
       // ---------------------------------------------------------------------
       playRareRevealSound();
       card3dInner.classList.add('anim-reveal-rare');
+      shockwaveRing.className = 'shockwave-ring boom-rare';
 
-      // Brilho súbito no momento do clique
-      spawnParticles({
-        x: centerX,
-        y: centerY,
-        count: 32,
-        colors: ['#ffcb05', '#f59e0b', '#ffffff'],
-        shapes: ['star'],
-        speedMin: 3,
-        speedMax: 9
-      });
-
-      // No meio do giro, revela a atmosfera rara + onda de choque + explosão de estrelas
       setTimeout(() => {
-        shockwaveRing.className = 'shockwave-ring boom-rare';
-        applyRevealedAtmosphere(card);
         spawnParticles({
           x: centerX,
           y: centerY,
-          count: 75,
+          count: 34,
           colors: ['#ffcb05', '#ec4899', '#60a5fa', '#a855f7', '#ffffff'],
           shapes: ['star', 'circle'],
-          speedMin: 4,
-          speedMax: 13,
+          speedMin: 3,
+          speedMax: 10,
           sizeMin: 5,
-          sizeMax: 13
+          sizeMax: 11
         });
-      }, 520);
+      }, 320);
 
       setTimeout(() => {
         card3dInner.classList.remove('anim-reveal-rare');
         card3dInner.style.transform = 'rotateY(180deg)';
         revealedStates[currentCardIndex] = true;
         isAnimatingCard = false;
+        applyRevealedAtmosphere(card);
         updateCaptionAndButtons(true);
         renderProgressAndTray();
-      }, 1580);
+      }, 960);
 
     } else if (card.tier === 'love') {
       // ---------------------------------------------------------------------
@@ -3330,70 +3360,35 @@ body.mode-love-revealed .poke-bg-stadium {
       // ---------------------------------------------------------------------
       playMythicLoveRevealSound();
       card3dInner.classList.add('anim-reveal-love');
+      shockwaveRing.className = 'shockwave-ring boom-love';
 
-      // Fase 1: Vórtice Lunar Dourado (Umbreon) + Rosa Fada (Sylveon)
-      spawnParticles({
-        x: centerX,
-        y: centerY,
-        count: 55,
-        colors: ['#ff4d94', '#fbbf24', '#60a5fa', '#ffffff'],
-        shapes: ['heart', 'star'],
-        speedMin: 3,
-        speedMax: 10
-      });
-
-      // Fase 2: Flash Cósmico + Supernova de Corações quando a carta vira!
       setTimeout(() => {
         if (screenFlash) {
           screenFlash.className = 'screen-flash flash-love';
         }
-        shockwaveRing.className = 'shockwave-ring boom-love';
-        applyRevealedAtmosphere(card);
-
         spawnParticles({
           x: centerX,
           y: centerY,
-          count: 135,
+          count: 48,
           colors: ['#ff4d94', '#fbbf24', '#ff85c0', '#60a5fa', '#ffffff'],
           shapes: ['heart', 'star'],
-          speedMin: 5,
-          speedMax: 16,
-          sizeMin: 7,
-          sizeMax: 16,
+          speedMin: 4,
+          speedMax: 12,
+          sizeMin: 6,
+          sizeMax: 13,
           gravity: 0.05
         });
-      }, 860);
-
-      // Fase 3: Chuva lateral de corações e estrelas lunares
-      setTimeout(() => {
-        spawnParticles({
-          x: window.innerWidth * 0.25,
-          y: window.innerHeight * 0.35,
-          count: 50,
-          colors: ['#ff4d94', '#fbbf24', '#ffffff'],
-          shapes: ['heart', 'star'],
-          speedMin: 3,
-          speedMax: 11
-        });
-        spawnParticles({
-          x: window.innerWidth * 0.75,
-          y: window.innerHeight * 0.35,
-          count: 50,
-          colors: ['#ff4d94', '#fbbf24', '#60a5fa'],
-          shapes: ['heart', 'star'],
-          speedMin: 3,
-          speedMax: 11
-        });
-      }, 1650);
+      }, 450);
 
       setTimeout(() => {
         card3dInner.classList.remove('anim-reveal-love');
         card3dInner.style.transform = 'rotateY(180deg)';
         revealedStates[currentCardIndex] = true;
         isAnimatingCard = false;
+        applyRevealedAtmosphere(card);
         updateCaptionAndButtons(true);
         renderProgressAndTray();
-      }, 2800);
+      }, 1360);
     }
   }
 
